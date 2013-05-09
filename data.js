@@ -1,0 +1,2 @@
+var datareadings = "{\"count\":\"4\",\"readings\":[{\"id\":\"1\",\"time\":\"2013-05-09 11:00:00\",\"value\":\"65\"},{\"id\":\"2\",\"time\":\"2013-05-09 11:09:52\",\"value\":\"76\"},{\"id\":\"3\",\"time\":\"2013-05-09 11:10:01\",\"value\":\"56\"},{\"id\":\"4\",\"time\":\"2013-05-09 11:10:46\",\"value\":\"56\"}]}"
+function testfunc(){   console.log("inside testfunc");    console.log(datareadings); }
