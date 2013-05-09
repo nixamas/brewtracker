@@ -1,0 +1,9 @@
+import http.server
+import socketserver
+
+theport = 1234
+Handler = http.server.SimpleHTTPRequestHandler
+pywebserver = socketserver.TCPServer(("", theport), Handler)
+
+print ("Python based web server. Serving at port" + str(theport))
+pywebserver.serve_forever()
