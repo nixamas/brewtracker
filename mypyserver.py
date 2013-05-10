@@ -1,6 +1,6 @@
 import http.server
-import socketserver
 import json
+import socketserver
 exData = {"firstName": "John","lastName": "Smith","age": 25,
                 "address": {
                     "streetAddress": "21 2nd Street",

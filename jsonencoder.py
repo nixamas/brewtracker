@@ -29,7 +29,7 @@ with open('data.js', 'w') as f:
     json.dump(readings, f, ensure_ascii=False)
     
     f.write("\n\r")
-    f.write("function testfunc(){")
-    f.write('   console.log("inside testfunc"); ')
-    f.write('   console.log(datareadings); ')
+    f.write("function getDataReadings(){")
+    f.write('   console.log("Returning data to analysis.html..."); ')
+    f.write('   return datareadings; ')
     f.write("}")
