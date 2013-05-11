@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content = "height = device-height, width = 420, user-scalable = no" /> 
+	<title>WebIOPi | Demo</title>
+	<script type="text/javascript" src="/webiopi.js"></script>
+	<script type="text/javascript">
+	webiopi().ready(function() {
+		var content, button;
+		content = $("#content");
+			
+		// create a button which output a bit sequence on GPIO 7 with a 100ms period 
+		button = webiopi().createSequenceButton("seq", "Sequence", 23, 100, "0101001001111001011000010110111001001101011000010111010001110100011010000110010101110111010011100110100101111000");
+		content.append(button); // append button to content div
+		
+//		// Only for Chrome and Safari, create a slider that pulse out a 0-100% duty cycle ratio on GPIO 8
+//		button = webiopi().createRatioSlider(8);
+//		content.append(button);
+		
+		// Only for Chrome and Safari, create a slider that pulse out a 0-100% duty cycle ratio on GPIO 8
+		button = webiopi().createAngleSlider(7);
+		button.attr("min",-90);
+		button.attr("max",90);
+		content.append(button);
+		               
+		button = webiopi().createGPIOButton(26, "GPIO-26");
+		
+		
+		
+		
+	});
+
+	function adjustAngleSlider() {
+		console.log("changing slider");
+
+	}	
+
+	function mousedown() {
+		webiopi().setValue(7, 1);
+	}
+	
+	function mouseup() {
+		webiopi().setValue(7, 0);
+	}
+	
+	function outputSequence() {
+		var sequence = "01010100110011001100101010" // S.O.S. morse code or whatever you want
+		// output sequence on gpio 7 with a 100ms period
+		webiopi().outputSequence(7, 100, sequence, sequenceCallback);
+	}
+	
+	function sequenceCallback(gpio, data) {
+		alert("sequence on " + gpio + " finished with " + data);
+	}
+	
+	function callMacro() {
+		var args = [1,2,3] // or whatever you want
+		// call myMacroWithArgs(arg)
+		webiopi().callMacro("myMacroWithArgs", args, macroCallback);
+	}
+	
+	function macroCallback(macro, args, data) {
+		alert(macro + " returned with " + data);
+	}
+
+	function moveToPosition(elem){
+		console.log("moveToPosition :: " + elem);
+		var angle = 0;
+		switch(elem.id){
+			case "position1":
+				console.log("position1 :: -90");
+				webiopi().pulseAngle(7,-90);
+				break;
+			case "position2":
+				console.log("position2 :: -30");
+				webiopi().pulseAngle(7,-30);
+				break;
+			case "position3":
+				console.log("position3 :: 30");
+				webiopi().pulseAngle(7,30);
+				break;
+			case "position4":
+				console.log("position4 :: 90");
+				webiopi().pulseAngle(7,90);
+				break;
+		}
+	}
+
+	function executeMove(elem){
+		//console.log("you selected :: " + elem.id);
+		switch(elem.id){
+			case "fl":
+				console.log("forward:left");
+				break;
+			case "f":
+				console.log("forward");
+				break;
+			case "fr":
+				console.log("forward:right");
+				break;
+			case "l":
+				console.log("left");
+				break;
+			case "s":
+				console.log("stop");
+				break;
+			case "r":
+				console.log("right");
+				break;
+			case "bl":
+				console.log("back:left");
+				break;
+			case "b":
+				console.log("back");
+				break;
+			case "br":
+				console.log("back:right");
+				break;
+		}
+	}
+
+	</script>
+	<style type="text/css">
+		button {
+			display: block;
+			margin: 5px 5px 5px 5px;
+			width: 160px;
+			height: 45px;
+			font-size: 24pt;
+			font-weight: bold;
+			color: black;
+		}
+		
+		input[type="range"] {
+			display: block;
+			width: 160px;
+			height: 45px;
+		}
+		
+		#gpio7.LOW {
+			background-color: White;
+		}
+		
+		#gpio7.HIGH {
+			background-color: Red;
+		}
+	</style>
+</head>
+<body>
+	<div id="content" align="center"></div>
+	<table border="5" bgcolor="black" align="center">
+		<tr>
+			<td><input type="button" value="fl" id="fl" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+			<td><input type="button" value="f" id="f" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+			<td><input type="button" value="fr" id="fr" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+		</tr>
+		<tr>
+			<td><input type="button" value="l" id="l" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+			<td><input type="button" value="s" id="s" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+			<td><input type="button" value="r" id="r" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+		</tr>
+		<tr>
+			<td><input type="button" value="bl" id="bl" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+			<td><input type="button" value="b" id="b" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+			<td><input type="button" value="br" id="br" onclick="executeMove(this)" style="height:50px;width:50px"/></td>
+		</tr>
+	</table>
+	<table border="10" bgcolor="red" align="center">
+		<tr>
+			<td><input type="button" value="position1" id="position1" onclick="moveToPosition(this)" style="height:50px;width:100px"/></td>
+			<td><input type="button" value="position2" id="position2" onclick="moveToPosition(this)" style="height:50px;width:100px"/></td>
+			<td><input type="button" value="position3" id="position3" onclick="moveToPosition(this)" style="height:50px;width:100px"/></td>
+			<td><input type="button" value="position4" id="position4" onclick="moveToPosition(this)" style="height:50px;width:100px"/></td>
+		</tr>
+	</table>
+</body>
+</html>
