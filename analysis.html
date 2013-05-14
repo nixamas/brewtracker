@@ -3,29 +3,40 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Brew Tracker Data Analysis</title>
-	<link href="style.css" rel="stylesheet" type="text/css">
+	<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
 	<link rel="stylesheet" type="text/css" media="all" href="js/jsDatePick/jsDatePick_ltr.min.css" />
     <link type="text/css" rel="stylesheet" href="css/graph.css">
 	<link type="text/css" rel="stylesheet" href="css/detail.css">
 	<link type="text/css" rel="stylesheet" href="css/legend.css">
 	<link type="text/css" rel="stylesheet" href="css/lines.css">
+    <link type="text/css" rel="stylesheet" href="css/style.css">
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
     
     <script id="datasource" language="javascript" type="text/javascript" src="data.js"></script>
-    <script src="js/Rickshaw.js"></script>
-    <script src="js/Rickshaw.Class.js"></script>
-    <script src="js/Rickshaw.Compat.ClassList.js"></script>
+    <script language="javascript" type="text/javascript" src="js/Rickshaw.js"></script>
+    <script language="javascript" type="text/javascript" src="js/Rickshaw.Class.js"></script>
+    <script language="javascript" type="text/javascript" src="js/Rickshaw.Compat.ClassList.js"></script>
 	<script language="javascript" type="text/javascript" src="js/flot/jquery.js"></script>
 	<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.js"></script>
 	<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.time.js"></script>
 	<script language="javascript" type="text/javascript" src="js/moment.js"></script>
 	<script language="javascript" type="text/javascript" src="js/jsDatePick/jsDatePick.min.1.3.js"></script>
-	<script src="js/Rickshaw.Graph.RangeSlider.js"></script>
-	<script src="js/Rickshaw.js"></script>
-	<script src="vendor/d3.v2.js"></script>
-	<script src="rickshaw.js"></script>
+	<script language="javascript" type="text/javascript" src="js/Rickshaw.Graph.RangeSlider.js"></script>
+	<script language="javascript" type="text/javascript" src="js/Rickshaw.js"></script>
+	<script language="javascript" type="text/javascript" src="vendor/d3.v2.js"></script>
+	<script language="javascript" type="text/javascript" src="rickshaw.js"></script>
+	<script src="js/extensions.js"></script>
+	<script type="text/javascript" >
+    function requestDataReadings(){
+        console.log("getting the data...")
+        $.getJSON('http://localhost:1234/datareadings.json', function(data) {
+              console.log("got the data...");
+              console.log(data);
+            });
+    }
+	</script>
     <style>
 </style>
 </head>
@@ -38,7 +49,7 @@
 		<!--Menu Begin-->
 		<div id="menu">
 		  <ul>
-			<li><a class="active" href="index.html"><span>Home</span></a></li>
+			<li><a href="index.html"><span>Home</span></a></li>
 			<li><a href="analysis.html"><span>Analysis</span></a></li>
 			<li><a href="#"><span>Administrative</span></a></li>
 			<li><a href="#"><span>Contact</span></a></li>
@@ -53,7 +64,7 @@
     <p>Selected dates starting at: <input type="text" size="12" id="minDateInput" />
                         and ending at: <input type="text" size="12" id="maxDateInput" />
                         <input type="button" id="selectDatesBtn" value="Find Readings" onclick="refineResults()"/>
-                        <input type="button" id="testbtn" value="TESTING" onclick="getData()"/></p>
+                        <input type="button" id="testbtn" value="TESTING" onclick="requestDataReadings()"/></p>
                     <div id="chart_container" align="center">
                         <div id="y_axis"></div>
                         <div id="chart"></div>
@@ -90,6 +101,7 @@
 </body>
 <script type="text/javascript">
 
+
     var d = [ [moment("2013-05-07 15:10:00"),65],
 					[moment("2013-05-07 15:13:00"),69],
 					[moment("2013-05-07 15:16:00"),65],
@@ -107,7 +119,16 @@
 					[moment("2013-05-08 15:53:00"),64] ];
     var DATA_READINGS = [];
     var DATA_READINGS_RICKSHAW = [];
+    var REQUESTED_DATA_OBJECT = null;
                     
+    $.getJSON('http://localhost:1234/datareadings.json', function(data) {
+        console.log("got the data...");
+//         console.log(data);
+        REQUESTED_DATA_OBJECT = JSON.parse( data );
+        parseDataReadings();
+        plotData();
+      });
+    
 	window.onload = function(){
         console.log("init page...");
 		new JsDatePick({
@@ -127,22 +148,35 @@
         }
 
         
-        parseDataReadings();
-        plotData();
+//         parseDataReadings();
+//         plotData();
 	};
-	
+ 
 	function parseDataReadings(){
-	   console.log("parsing the data readigns...");
-	   var drObj = JSON.parse( getDataReadings() );
-	   console.log("DataReadings :: ");
-	   console.log(drObj);
-	   for(var i = 0; i< drObj.readings.length; i++){
-	       //console.log("parsing reading :: " + drObj.readings[i].time + " - " + drObj.readings[i].value);
-	       DATA_READINGS[i] = [ (moment(drObj.readings[i].time).unix())*1000 , parseInt(drObj.readings[i].value) ];  
-           DATA_READINGS_RICKSHAW[i] = {"x":( moment(drObj.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(drObj.readings[i].value)};
-	   } 
-	   console.log(DATA_READINGS_RICKSHAW);
-	}
+	       console.log("parsing the data readigns...");
+	       var drObj = JSON.parse( getDataReadings() );
+	       console.log("DataReadings :: ");
+	       console.log(drObj);
+	       for(var i = 0; i< drObj.readings.length; i++){
+	           //console.log("parsing reading :: " + drObj.readings[i].time + " - " + drObj.readings[i].value);
+	           DATA_READINGS[i] = [ (moment(drObj.readings[i].time).unix())*1000 , parseInt(drObj.readings[i].value) ];  
+	           DATA_READINGS_RICKSHAW[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value)};
+	       } 
+	       console.log(DATA_READINGS_RICKSHAW);
+	    }
+	
+// 	function parseDataReadings(){
+// 	   console.log("parsing the data readigns...");
+// 	   var drObj = JSON.parse( getDataReadings() );
+// 	   console.log("DataReadings :: ");
+// 	   console.log(drObj);
+// 	   for(var i = 0; i< drObj.readings.length; i++){
+// 	       //console.log("parsing reading :: " + drObj.readings[i].time + " - " + drObj.readings[i].value);
+// 	       DATA_READINGS[i] = [ (moment(drObj.readings[i].time).unix())*1000 , parseInt(drObj.readings[i].value) ];  
+//            DATA_READINGS_RICKSHAW[i] = {"x":( moment(drObj.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(drObj.readings[i].value)};
+// 	   } 
+// 	   console.log(DATA_READINGS_RICKSHAW);
+// 	}
 	
 	function plotData(){
 	   console.log("plotting data...");
@@ -161,8 +195,6 @@
                 }
             ]
         } );
-
-        
 
         var hoverDetail = new Rickshaw.Graph.HoverDetail( {
             graph: graph,
@@ -195,13 +227,10 @@
             tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
             element: document.getElementById('y_axis'),
         } );
+        
 //         var slider = new Rickshaw.Graph.RangeSlider( {
 //             graph: graph,
-//             element: $('#slider')
-//         } );
-//         var slider = new Rickshaw.Graph.RangeSlider( {
-//             graph: graph,
-//             element: document.getElementById('slider')
+//             element: document.getElementById('chart_container')
 //         } );
 //         var slider = new Rickshaw.Graph.RangeSlider({
 //             graph: graph,
@@ -211,6 +240,12 @@
         y_axis.render();*/
         
         graph.render();
+        
+//         var slider = new Rickshaw.Graph.RangeSlider( {
+//             graph: graph,
+//             element:  document.getElementById('slider')
+//         } );
+
 	}
 	
     function refineResults(){

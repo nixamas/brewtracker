@@ -1,16 +1,7 @@
-import http.server
-import json
-import socketserver
-exData = {"firstName": "John","lastName": "Smith","age": 25,
-                "address": {
-                    "streetAddress": "21 2nd Street",
-                    "city": "New York",
-                    "state": "NY",
-                    "postalCode": 10021
-                }
-            }
+import SimpleHTTPServer, SocketServer, json
+from jsonencoder import build_json
             
-class ServerHandler(http.server.SimpleHTTPRequestHandler):
+class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     def do_GET(self):
         print (" SELF DATA path "+ str(self.path) )
         form = {}
@@ -24,7 +15,7 @@ class ServerHandler(http.server.SimpleHTTPRequestHandler):
             #self.send_header('Content-type', 'text/html')
             self.send_header('Content-type', 'text/json')
             self.end_headers()
-            self.wfile.write(bytes(str("{'firstname':'ryan', 'lastname':'nix'}"), 'UTF-8'))
+            self.wfile.write(str( build_json() ) )
             self.wfile.flush()
             #images = glob.glob('*.jpg')
             #rand = random.randint(0,len(images)-1)
@@ -32,12 +23,12 @@ class ServerHandler(http.server.SimpleHTTPRequestHandler):
             #self.wfile.write(bytes(imagestring, 'UTF-8')
         else:
             print ("normal GET request")
-            http.server.SimpleHTTPRequestHandler.do_GET(self)
+            SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 theport = 1234
 #Handler = http.server.SimpleHTTPRequestHandler
 Handler = ServerHandler
-pywebserver = socketserver.TCPServer(("", theport), Handler)
+pywebserver = SocketServer.TCPServer(("", theport), Handler)
 
 print ("Python based web server. Serving at port" + str(theport))
 pywebserver.serve_forever() 

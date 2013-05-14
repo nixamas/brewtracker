@@ -27,5 +27,22 @@ def main():
         f.write('   return datareadings; ')
         f.write("}")
         
+def build_json():
+    print("building json object")
+    conn = sqlite3.connect("mydatabase.db")
+    cursor = conn.cursor()
+    readings = '{"count":"%s","readings":['     #start of json object
+    cnt = 0
+    for row in cursor.execute("SELECT rowid, * FROM readings ORDER BY time"):
+        readings = readings + '{"id":"' + str(row[0]) + '","time":"' + str(row[1]) + '","value":"' + str(row[2]) + '"},'
+        cnt += 1
+    readings = readings[:-1]    #remove last comma
+    readings = readings + ']}'
+    readings = readings % cnt
+
+    return json.dumps(readings)
+        
+        
 if __name__ == "__main__":
-    main()
+    #main()
+    print("json object :::: " + str(build_json()))
