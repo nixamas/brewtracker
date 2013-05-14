@@ -10,12 +10,20 @@
 	<link type="text/css" rel="stylesheet" href="css/legend.css">
 	<link type="text/css" rel="stylesheet" href="css/lines.css">
     
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+    
     <script id="datasource" language="javascript" type="text/javascript" src="data.js"></script>
+    <script src="js/Rickshaw.js"></script>
+    <script src="js/Rickshaw.Class.js"></script>
+    <script src="js/Rickshaw.Compat.ClassList.js"></script>
 	<script language="javascript" type="text/javascript" src="js/flot/jquery.js"></script>
 	<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.js"></script>
 	<script language="javascript" type="text/javascript" src="js/flot/jquery.flot.time.js"></script>
 	<script language="javascript" type="text/javascript" src="js/moment.js"></script>
 	<script language="javascript" type="text/javascript" src="js/jsDatePick/jsDatePick.min.1.3.js"></script>
+	<script src="js/Rickshaw.Graph.RangeSlider.js"></script>
+	<script src="js/Rickshaw.js"></script>
 	<script src="vendor/d3.v2.js"></script>
 	<script src="rickshaw.js"></script>
     <style>
@@ -49,11 +57,12 @@
                     <div id="chart_container" align="center">
                         <div id="y_axis"></div>
                         <div id="chart"></div>
+                        <div id="slider"></div>
                         <div id="legend_container">
                             <div id="smoother" title="Smoothing"></div>
                             <div id="legend"></div>
                         </div>
-                        <div id="slider"></div>
+<!--                         <div id="slider"></div> -->
                     </div>
         <table>
             <tr>
@@ -101,7 +110,7 @@
                     
 	window.onload = function(){
         console.log("init page...");
-/**		new JsDatePick({
+		new JsDatePick({
 			useMode:2,
 			target:"minDateInput"
 			});
@@ -116,7 +125,7 @@
         if(document.getElementById("maxDateInput").value != ""){
             document.getElementById("maxDateInput").value = "";
         }
-*/
+
         
         parseDataReadings();
         plotData();
@@ -124,12 +133,11 @@
 	
 	function parseDataReadings(){
 	   console.log("parsing the data readigns...");
-	   var dr = getDataReadings();
-	   var drObj = JSON.parse(dr);
-	   console.log("DataReadings :: " + dr);
+	   var drObj = JSON.parse( getDataReadings() );
+	   console.log("DataReadings :: ");
 	   console.log(drObj);
 	   for(var i = 0; i< drObj.readings.length; i++){
-	       console.log("parsing reading :: " + drObj.readings[i].time + " - " + drObj.readings[i].value);
+	       //console.log("parsing reading :: " + drObj.readings[i].time + " - " + drObj.readings[i].value);
 	       DATA_READINGS[i] = [ (moment(drObj.readings[i].time).unix())*1000 , parseInt(drObj.readings[i].value) ];  
            DATA_READINGS_RICKSHAW[i] = {"x":( moment(drObj.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(drObj.readings[i].value)};
 	   } 
@@ -138,14 +146,6 @@
 	
 	function plotData(){
 	   console.log("plotting data...");
-/**	   console.log(DATA_READINGS);
-	   $.plot("#placeholder", [DATA_READINGS], {
-            xaxis: { mode: "time",
-                    show: true,
-                    ticks: 4,
-                    timeformat: "%Y-%m-%d %H:%M:%S",
-                    tickFormatter: "%m-%d %H:%M"}
-        });*/
         
         var graph = new Rickshaw.Graph( {
             element: document.getElementById("chart"),
@@ -165,7 +165,13 @@
         
 
         var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-            graph: graph
+            graph: graph,
+            formatter: function(series, x, y) {
+                var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                var content = swatch + series.name + ": " + parseInt(y) + '<br>' + date;
+                return content;
+            }
         } );
 
         var legend = new Rickshaw.Graph.Legend( {
@@ -189,7 +195,18 @@
             tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
             element: document.getElementById('y_axis'),
         } );
-        
+//         var slider = new Rickshaw.Graph.RangeSlider( {
+//             graph: graph,
+//             element: $('#slider')
+//         } );
+//         var slider = new Rickshaw.Graph.RangeSlider( {
+//             graph: graph,
+//             element: document.getElementById('slider')
+//         } );
+//         var slider = new Rickshaw.Graph.RangeSlider({
+//             graph: graph,
+//             element: document.getElementById('slider')
+//         });
         /**x_axes.render();
         y_axis.render();*/
         
@@ -200,69 +217,12 @@
         var minDate = document.getElementById("minDateInput").value;
         var maxDate = document.getElementById("maxDateInput").value;
         console.log("refine data results to range " + minDate + " to " + maxDate);
-        $.plot("#placeholder", [DATA_READINGS], {
-                xaxis: {
-					mode: "time",
-					show: true,
-					min: moment(minDate + " 00:00:00").unix(),
-					max: moment(maxDate + " 00:00:00").unix(),
-					ticks: 5,
-					timeformat: "%Y-%m-%d %H:%M:%S",
-					tickFormatter: "%m-%d %H:%M"
-				}
-			});
+
     }
     
     
     /*****************************  RICKSHAW  *********************************/
     // set up our data series with 50 random data points
 
-/**        var seriesData = [ [], [], [] ];
-        var random = new Rickshaw.Fixtures.RandomData(150);
-
-        for (var i = 0; i < 150; i++) {
-            random.addData(seriesData);
-        }
-
-        // instantiate our graph!
-
-        var graph = new Rickshaw.Graph( {
-            element: document.getElementById("chart"),
-            width: 960,
-            height: 500,
-            renderer: 'line',
-            series: [
-                {
-                    color: "#c05020",
-                    data: seriesData[0],
-                    name: 'New York'
-                }
-            ]
-        } );
-
-        graph.render();
-
-        var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-            graph: graph
-        } );
-
-        var legend = new Rickshaw.Graph.Legend( {
-            graph: graph,
-            element: document.getElementById('legend')
-
-        } );
-
-        var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
-            graph: graph,
-            legend: legend
-        } );
-
-        var axes = new Rickshaw.Graph.Axis.Time( {
-            graph: graph
-        } );
-        
-        axes.render();
-*/
-    
 	</script>
 </html>
