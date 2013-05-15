@@ -1,0 +1,36 @@
+<!doctype html>
+<title>Flaskr</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<div class=page>
+  <h1>Flaskr</h1>
+  <div class=metanav>
+  {% if not session.logged_in %}
+    <a href="{{ url_for('login') }}">log in</a>
+  {% else %}
+    <a href="{{ url_for('logout') }}">log out</a>
+  {% endif %}
+  </div>
+  <div id="header">
+    <h2>Brew Tracker</h2>
+      <div class="center">
+        <div id="logo"><a href="#">Brew Tracker</a></div>
+        <!--Menu Begin-->
+        <div id="menu">
+          <ul>
+            <li><a href="index.html"><span>Home</span></a></li>
+            <li><a href="analysis.html"><span>Analysis</span></a></li>
+            <li><a href="#"><span>Administrative</span></a></li>
+            <li><a href="#"><span>Contact</span></a></li>
+          </ul>
+        </div>
+        <!--Menu END-->
+      </div>
+    </div>
+  {% for message in get_flashed_messages() %}
+    <div class=flash>{{ message }}</div>
+  {% endfor %}
+  {% block body %}{% endblock %}
+  <div id="footer">
+        Brew Tracker -- Version 1.0
+    </div>
+</div>
