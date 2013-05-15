@@ -1,5 +1,39 @@
 {% extends "layout.html" %}
 {% block body %}
+    <div name="includeblock">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+        
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.Class.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.Compat.ClassList.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/flot/jquery.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/flot/jquery.flot.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/flot/jquery.flot.time.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/jsDatePick/jsDatePick.min.1.3.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.Graph.RangeSlider.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/vendor/d3.v2.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/rickshaw.js') }}"></script>
+        
+        <link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/jsDatePick/jsDatePick_ltr.min.css') }}" media="all"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/graph.css') }}">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/legend.css') }}">
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/lines.css') }}">
+    </div>
+    <h1>BREW TRACKER DATA ANALYSIS</h1>
+    <div id="chart_container" align="center">
+        <div id="y_axis"></div>
+        <div id="chart"></div>
+        <div id="legend_container">
+            <div id="smoother" title="Smoothing"></div>
+            <div id="legend"></div>
+        </div>
+        <div id="slider"></div>
+    </div>
   {% if session.logged_in %}
     <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
@@ -18,4 +52,106 @@
     <li><em>Unbelievable.  No entries here so far</em>
   {% endfor %}
   </ul>
+  <script type="text/javascript">
+    var DATA_READINGS_RICKSHAW = [];
+    var REQUESTED_DATA_OBJECT = null;
+    var test = '{{ readings }}';
+                    
+    $.getJSON('http://localhost:1234/datareadings.json', function(data) {
+        console.log("got the data...");
+//         console.log(data);
+        REQUESTED_DATA_OBJECT = JSON.parse( data );
+        parseDataReadings();
+        plotData();
+      });
+    
+    var DATA_READINGS_RICKSHAW_2 = []
+                    
+    $.noConflict();
+	window.onload = function(){
+        console.log("init page...");
+        console.log("test data rcvd....");
+        console.log(test);
+		new JsDatePick({
+			useMode:2,
+			target:"minDateInput"
+			});
+		new JsDatePick({
+			useMode:2,
+			target:"maxDateInput"
+			});
+            
+        if(document.getElementById("minDateInput").value != ""){
+            document.getElementById("minDateInput").value = "";
+        }
+        if(document.getElementById("maxDateInput").value != ""){
+            document.getElementById("maxDateInput").value = "";
+        }
+
+//         parseDataReadings();
+//         plotData();
+	};
+
+    function parseDataReadings(){
+	   console.log("parsing the data readigns...");
+	   for(var i = 0; i< REQUESTED_DATA_OBJECT.readings.length; i++){
+           DATA_READINGS_RICKSHAW[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value)};
+           DATA_READINGS_RICKSHAW_2[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value * 2 )};
+       }
+   }
+
+    function plotData(){
+        console.log("plotting data...");
+        var graph = new Rickshaw.Graph( {
+            element: document.getElementById("chart"),
+            width: 700,
+            height: 500,
+            renderer: 'line',
+            interpolation: 'linear',
+            series: [
+                {
+                    color: "steelblue",
+                    data: DATA_READINGS_RICKSHAW,
+                    name: 'Data Readings'
+                },
+                {
+                    color: "red",
+                    data: DATA_READINGS_RICKSHAW_2,
+                    name: 'Data Readings'
+                }
+            ]
+        } );
+        var slider = new Rickshaw.Graph.RangeSlider( {
+            graph: graph,
+            element: $('#slider')
+        } );
+        var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+            graph: graph,
+            formatter: function(series, x, y) {
+                var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
+                var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
+                var content = swatch + series.name + ": " + parseInt(y) + '<br>' + date;
+                return content;
+            }
+        } );
+        var legend = new Rickshaw.Graph.Legend( {
+            graph: graph,
+            element: document.getElementById('legend')
+        } );
+        var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
+            graph: graph,
+            legend: legend
+        } );
+        var x_axes = new Rickshaw.Graph.Axis.Time( {
+            graph: graph
+        } );
+        var y_axis = new Rickshaw.Graph.Axis.Y( {
+            graph: graph,
+            orientation: 'left',
+            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+            element: document.getElementById('y_axis'),
+        } );
+        graph.render();
+	}//plotData()
+  </script>
 {% endblock %}

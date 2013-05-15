@@ -33,6 +33,10 @@ def init_db():
         db = get_db()
         with app.open_resource('schema.sql') as f:
             db.cursor().executescript(f.read())
+            
+        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("time1", "reading1-1", "reading2-1")')
+        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("time2", "reading1-2", "reading2-2")')
+        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("time3", "reading1-3", "reading2-3")')
         db.commit()
 
 
@@ -64,6 +68,12 @@ def show_entries():
     readings = cur.fetchall()
     return render_template('show_entries.html', readings=readings)
 
+@app.route('/analysis', methods=['GET'])
+def show_analysis():
+    db = get_db()
+    cur = db.execute('select reading_time, reading_brew_temp, reading_amb_temp from readings order by id desc')
+    readings = cur.fetchall()
+    return render_template('analysis.html', readings=readings)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
@@ -71,7 +81,7 @@ def add_entry():
         abort(401)
     db = get_db()
     db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values (?, ?, ?)',
-                 [request.form['title'], request.form['text']])
+                 [request.form['reading_time'], request.form['reading_brew_temp'], request.form['reading_amb_temp']])
     db.commit()
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
