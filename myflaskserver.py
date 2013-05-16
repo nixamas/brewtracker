@@ -13,6 +13,8 @@ from __future__ import with_statement
 from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
      render_template, flash, _app_ctx_stack
+from beerdatabaseapiparser import Beer_Database_Api
+import json
 
 # configuration
 DATABASE = 'flaskr.db'
@@ -20,6 +22,8 @@ DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'default'
+
+BEER_DATABASE = {}
 
 # create our little application :)
 app = Flask(__name__)
@@ -75,6 +79,12 @@ def show_analysis():
     readings = cur.fetchall()
     return render_template('analysis.html', readings=readings)
 
+@app.route('/beers', methods=['GET'])
+def show_analysis():
+    beers = BEER_DATABASE.get_beers()
+    bb = json.dumps(beers)
+    return render_template('beerlist.html', beers=bb)    
+    
 @app.route('/add', methods=['POST'])
 def add_entry():
     if not session.get('logged_in'):
@@ -106,9 +116,12 @@ def login():
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_entries')) 
 
 
 if __name__ == '__main__':
     init_db()
+    if BEER_DATABASE == {} :
+        BEER_DATABASE = Beer_Database_Api()
+        
     app.run()
