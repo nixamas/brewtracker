@@ -10,9 +10,10 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import with_statement
-from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash, _app_ctx_stack
+    render_template, flash, _app_ctx_stack
+from sqlite3 import dbapi2 as sqlite3
+import json
 
 # configuration
 DATABASE = 'flaskr.db'
@@ -34,9 +35,9 @@ def init_db():
         with app.open_resource('schema.sql') as f:
             db.cursor().executescript(f.read())
             
-        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("time1", "reading1-1", "reading2-1")')
-        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("time2", "reading1-2", "reading2-2")')
-        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("time3", "reading1-3", "reading2-3")')
+        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("2012-05-1 12:00:00", "65", "88")')
+        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("2012-05-15 12:00:00", "72", "80")')
+        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("2012-05-23 12:00:00", "58", "72")')
         db.commit()
 
 
@@ -71,9 +72,14 @@ def show_entries():
 @app.route('/analysis', methods=['GET'])
 def show_analysis():
     db = get_db()
-    cur = db.execute('select reading_time, reading_brew_temp, reading_amb_temp from readings order by id desc')
+    cur = db.execute('select id, reading_time, reading_brew_temp, reading_amb_temp from readings order by id asc')
     readings = cur.fetchall()
-    return render_template('analysis.html', readings=readings)
+    readings_array_list = []
+    for reading in readings:
+        r = ( reading[0], str(reading[1]), str(reading[2]), str(reading[3]) )
+        print(str(r))
+        readings_array_list.append(r)
+    return render_template('analysis.html', readings=json.dumps(readings_array_list))
 
 @app.route('/add', methods=['POST'])
 def add_entry():
