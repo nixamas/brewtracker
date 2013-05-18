@@ -15,13 +15,48 @@
 {% else %}
     <h2>ADMINSTRATOR</h2>
     <form action="{{ url_for('show_admin') }}" method=post>
-    <dl>
-      <dt>Measurement Interval:
-      <dd><input type=text name=interval>
-      <dt>Email:
-      <dd><input type=text name=adminemail>
-      <dd><input type=submit value=Save>
-    </dl>
-  </form>
+	    <dl>
+	      <dt>Measurement Interval:
+	      <dd><input type=text name=interval>
+	      <dt>Email:
+	      <dd><input type=text name=adminemail>
+	      <dd><input type=submit value=Save>
+	    </dl>
+	</form>
+	<h2>Debugging</h2>
+<!--     <form action="{{ url_for('show_debug') }}" method=post> -->
+        <dl>
+<!--           <dt>Measurement Interval: -->
+<!--           <dd><input type=text name=interval> -->
+<!--           <dt>Email: -->
+<!--           <dd><input type=text name=adminemail> -->
+<!--           <dd><input type=submit value=Save> -->
+          <button value="text" onclick="getDebugData()">Debug Data</button>
+        </dl>
+        
+        <h1 id="debug_field_id" hidden>DEBUG DATA</h1>
+        <textarea id="debug_field_text" rows="3" cols="50" hidden>
+        </textarea>
+         
+<!--     </form> -->
 {% endif %}
+<script type="text/javascript">
+// debugger;
+function getDebugData(){
+	console.log("getting debug data!!!");
+	var debugUrl = window.location.origin + "{{ url_for('show_debug') }}"
+	$.getJSON( debugUrl, function(data) {
+        console.log("got the data...");
+        console.log(data);
+        var DEBUG_DATA = JSON.parse( data );
+        console.log(DEBUG_DATA)
+        document.getElementById("debug_field_id").hidden = false
+        document.getElementById("debug_field_text").hidden = false
+        document.getElementById("debug_field_text").innerHTML = DEBUG_DATA.temp;
+//         REQUESTED_DATA_OBJECT = JSON.parse( data );
+//         parseDataReadings();
+//         plotData();
+      });
+}
+</script>
 {% endblock %}

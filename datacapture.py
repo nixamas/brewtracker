@@ -36,5 +36,22 @@ def main():
     print("writing data to javascript file...")
     jsonencoder.main()
     
+def get_temperature():
+    try:
+        with open('/sys/bus/w1/devices/28-000004b5fbb9/w1_slave') as f: 
+            print("found file...")
+            content = f.readlines()
+            lVal = str(content[1])  #get 2nd line of file
+            temp = lVal.rsplit('=',1)   #split temp value out
+            tC = ( int(temp[1])/1000)   #find C
+            tF = ( tC * (9/5) + 32 )    #find F
+            print("file line 2 :: " + str(tC) + "^C -- " + str(tF) + "^F ")
+    except IOError:
+        print ("No Temperatue Sensor was found... Storing Random data...")  
+        tC = random.randrange(30, 40)
+        tF = random.randrange(55, 83)
+        
+    return "Fahrenheit :: " + str(tF) + " ---- Celsius :: " + str(tC)
+
 if __name__ == "__main__":
     main()

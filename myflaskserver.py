@@ -10,12 +10,13 @@
     :license: BSD, see LICENSE for more details.
 """
 from __future__ import with_statement
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-    render_template, flash, _app_ctx_stack
-from sqlite3 import dbapi2 as sqlite3
 from beerdatabaseapiparser import Beer_Database_Api
+from datacapture import get_temperature
+from flask import Flask, request, session, redirect, url_for, abort, \
+    render_template, flash, _app_ctx_stack
 from jsonencoder import build_json
-import json 
+from sqlite3 import dbapi2 as sqlite3
+import json
 
 # configuration
 DATABASE = 'flaskr.db'
@@ -23,6 +24,7 @@ DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'default'
+CONFIG_FILE = 'config'
 
 BEER_DATABASE = {}
 
@@ -30,7 +32,6 @@ BEER_DATABASE = {}
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
-
 
 def init_db():
     """Creates the database tables."""
@@ -51,7 +52,6 @@ def get_db():
         top.sqlite_db = sqlite_db
 
     return top.sqlite_db
-
 
 @app.teardown_appcontext
 def close_db_connection(exception):
@@ -85,6 +85,11 @@ def show_beers():
     beers = BEER_DATABASE.get_beers()
     bb = json.dumps(beers)
     return render_template('beerlist.html', beers=bb)    
+
+@app.route('/debug', methods=['GET', 'POST'])
+def show_debug():
+    debug_data = '{"temp":"' + str(get_temperature()) +'"}'
+    return json.dumps(debug_data)
     
 @app.route('/admin', methods=['GET', 'POST'])
 def show_admin():
@@ -108,7 +113,6 @@ def add_entry():
     flash('New entry was successfully posted')
     return redirect(url_for('show_entries'))
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -123,13 +127,11 @@ def login():
             return redirect(url_for('show_admin'))
     return render_template('admin.html', error=error)
 
-
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('show_entries')) 
-
 
 if __name__ == '__main__':
     init_db()
