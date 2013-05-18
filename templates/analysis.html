@@ -1,175 +1,83 @@
 {% extends "layout.html" %}
 {% block body %}
     <div>
-	    <link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/jsDatePick/jsDatePick_ltr.min.css') }}" media="all"/>
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/graph.css') }}">
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}">
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/legend.css') }}">
-        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/lines.css') }}">
-        
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
-        
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.Class.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.Compat.ClassList.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/flot/jquery.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/flot/jquery.flot.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/flot/jquery.flot.time.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/jsDatePick/jsDatePick.min.1.3.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.Graph.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.Graph.RangeSlider.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/Rickshaw.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/vendor/d3.v2.js') }}"></script>
-        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/rickshaw.js') }}"></script>
-        
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/moment.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/highcharts/highcharts.js') }}"></script>
+        <script language="javascript" type="text/javascript" src="{{ url_for('static', filename='js/highcharts/modules/exporting.js') }}"></script>
     </div>
+    
     <h1>BREW TRACKER DATA ANALYSIS</h1>
-    <div id="chart_container" align="center">
-        <div id="y_axis"></div>
-        <div id="chart"></div>
-        <div id="legend_container">
-            <div id="smoother" title="Smoothing"></div>
-            <div id="legend"></div>
-        </div>
-        <div id="slider"></div>
-    </div>
-<!--   {% if session.logged_in %} -->
-<!--     <form action="{{ url_for('add_entry') }}" method=post class=add-entry> -->
-<!--       <dl> -->
-<!--         <dt>Title: -->
-<!--         <dd><input type=text size=30 name=title> -->
-<!--         <dt>Text: -->
-<!--         <dd><textarea name=text rows=5 cols=40></textarea> -->
-<!--         <dd><input type=submit value=Share> -->
-<!--       </dl> -->
-<!--     </form> -->
-<!--   {% endif %} -->
-  <ul class=entries>
-<!--   {% for reading in readings %} -->
-<!--     <li><h2>{{ reading.readings_time }}</h2>{{ reading.reading_brew_temp|safe }} -->
-<!--   {% else %} -->
-<!--     <li><em>Unbelievable.  No entries here so far</em> -->
-<!--   {% endfor %} -->
-  </ul>
+    <div id="container" style="width: 100%; height: 400px; margin: 20 auto"></div>
+       
   <script type="text/javascript">
     var DATA_READINGS_RICKSHAW = [];
     var REQUESTED_DATA_OBJECT = null;
     var FLASK_DATA = '{{ readings|safe }}';
     var FLASK_DATA_OBJ = null;
                     
-//     $.getJSON('http://localhost:1234/datareadings.json', function(data) {
-//         console.log("got the data...");
-// //         console.log(data);
-//         REQUESTED_DATA_OBJECT = JSON.parse( data );
-//         parseDataReadings();
-//         plotData();
-//       });
-    
-    var DATA_READINGS_RICKSHAW_2 = []
-                    
-    $.noConflict();
-	window.onload = function(){
-        console.log("init page...");
-        console.log("test data rcvd....");
-        console.log(FLASK_DATA);
+    $(function () {
+    	console.log(FLASK_DATA);
         console.log( FLASK_DATA_OBJ = JSON.parse(FLASK_DATA) );
-//         console.log(FLASK_DATA_OBJ[0][1]);
-// 		new JsDatePick({
-// 			useMode:2,
-// 			target:"minDateInput"
-// 			});
-// 		new JsDatePick({
-// 			useMode:2,
-// 			target:"maxDateInput"
-// 			});
-            
-//         if(document.getElementById("minDateInput").value != ""){
-//             document.getElementById("minDateInput").value = "";
-//         }
-//         if(document.getElementById("maxDateInput").value != ""){
-//             document.getElementById("maxDateInput").value = "";
-//         }
+    	parseFlaskDataReadings();
+        $('#container').highcharts({
+            chart: {
+                type: 'line',
+                zoomType: 'x'
+            },
+            title: {
+                text: 'Temperature Readings'
+            },
+            xAxis: {
+                type: 'datetime',
+                dateTimeLabelFormats: { 
+                    month: '%e. %b',
+                    year: '%b'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Temperature'
+                }
+            },
+            tooltip: {
+                formatter: function() {
+                        return '<b>'+ this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%e. %b - %H:%M', this.x) +'   '+ this.y +'^F';
+                }
+            },
+            series: [{
+                name: 'Brew Temperature',
+                // Define the data points. All series have a dummy year
+                // of 1970/71 in order to be compared on the same x axis. Note
+                // that in JavaScript, months start at 0 for January, 1 for February etc.
+                data: DATA_READINGS_RICKSHAW
+            }]
+        });
+    });
 
-//         parseDataReadings();
-//         plotData();
-
-        parseFlaskDataReadings();
-        plotData();
-	};
+// 	window.onload = function(){
+//         console.log("init page...");
+//         console.log("test data rcvd....");
+// 	};
 
 	function parseFlaskDataReadings(){
 	       console.log("parsing the data readigns...");
-	       for(var i = 0; i< FLASK_DATA_OBJ.length; i++){
-	           DATA_READINGS_RICKSHAW[i] = {"x":( moment(FLASK_DATA_OBJ[i][1]).subtract("hours", 5).unix() ), "y": parseInt(FLASK_DATA_OBJ[i][2])};
-	           DATA_READINGS_RICKSHAW_2[i] = {"x":( moment(FLASK_DATA_OBJ[i][1]).subtract("hours", 5).unix() ), "y": parseInt(FLASK_DATA_OBJ[i][2] * 2 )};
+	       for(var i = 0; i< parseInt( FLASK_DATA_OBJ.count ); i++){
+	    	   var d = new Date( Date.parse(FLASK_DATA_OBJ.readings[i].time) );
+	    	   d.setHours( d.getHours() - 5 );
+	    	   DATA_READINGS_RICKSHAW[i] = [ d.getTime() , parseInt( FLASK_DATA_OBJ.readings[i].value ) ];//Date.parse(FLASK_DATA_OBJ.readings[i].time)
 	       }
 	   }
 	
-    function parseDataReadings(){
-	   console.log("parsing the data readigns...");
-	   for(var i = 0; i< REQUESTED_DATA_OBJECT.readings.length; i++){
-           DATA_READINGS_RICKSHAW[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value)};
-           DATA_READINGS_RICKSHAW_2[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value * 2 )};
-       }
-   }
+//     function parseDataReadings(){
+// 	   console.log("parsing the data readigns...");
+// 	   for(var i = 0; i< REQUESTED_DATA_OBJECT.readings.length; i++){
+//            DATA_READINGS_RICKSHAW[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value)};
+//            DATA_READINGS_RICKSHAW_2[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value * 2 )};
+//        }
+//    }
 
-    function plotData(){
-        console.log("plotting data...");
-        $.noConflict();
-        var graph = new Rickshaw.Graph( {
-            element: document.getElementById("chart"),
-            width: 700,
-            height: 500,
-            renderer: 'line',
-            interpolation: 'linear',
-            series: [
-                {
-                    color: "steelblue",
-                    data: DATA_READINGS_RICKSHAW,
-                    name: 'Data Readings'
-                },
-                {
-                    color: "red",
-                    data: DATA_READINGS_RICKSHAW_2,
-                    name: 'Data Readings'
-                }
-            ]
-        } );
-        var slider = new Rickshaw.Graph.RangeSlider( {
-            graph: graph,
-            element: $('#slider')
-        } );
-        var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-            graph: graph,
-            formatter: function(series, x, y) {
-                var date = '<span class="date">' + new Date(x * 1000).toUTCString() + '</span>';
-                var swatch = '<span class="detail_swatch" style="background-color: ' + series.color + '"></span>';
-                var content = swatch + series.name + ": " + parseInt(y) + '<br>' + date;
-                return content;
-            }
-        } );
-        var legend = new Rickshaw.Graph.Legend( {
-            graph: graph,
-            element: document.getElementById('legend')
-        } );
-        var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
-            graph: graph,
-            legend: legend
-        } );
-        var x_axes = new Rickshaw.Graph.Axis.Time( {
-            graph: graph
-        } );
-        var y_axis = new Rickshaw.Graph.Axis.Y( {
-            graph: graph,
-            orientation: 'left',
-            tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
-            element: document.getElementById('y_axis'),
-        } );
-        graph.render();
-	}//plotData()
   </script>
 {% endblock %}

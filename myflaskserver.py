@@ -13,7 +13,9 @@ from __future__ import with_statement
 from flask import Flask, request, session, g, redirect, url_for, abort, \
     render_template, flash, _app_ctx_stack
 from sqlite3 import dbapi2 as sqlite3
-import json
+from beerdatabaseapiparser import Beer_Database_Api
+from jsonencoder import build_json
+import json 
 
 # configuration
 DATABASE = 'flaskr.db'
@@ -21,6 +23,8 @@ DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
 PASSWORD = 'default'
+
+BEER_DATABASE = {}
 
 # create our little application :)
 app = Flask(__name__)
@@ -34,12 +38,7 @@ def init_db():
         db = get_db()
         with app.open_resource('schema.sql') as f:
             db.cursor().executescript(f.read())
-            
-        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("2012-05-1 12:00:00", "65", "88")')
-        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("2012-05-15 12:00:00", "72", "80")')
-        db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values ("2012-05-23 12:00:00", "58", "72")')
         db.commit()
-
 
 def get_db():
     """Opens a new database connection if there is none yet for the
@@ -61,7 +60,6 @@ def close_db_connection(exception):
     if hasattr(top, 'sqlite_db'):
         top.sqlite_db.close()
 
-
 @app.route('/')
 def show_entries():
     db = get_db()
@@ -69,6 +67,7 @@ def show_entries():
     readings = cur.fetchall()
     return render_template('show_entries.html', readings=readings)
 
+@app.route('/index')
 @app.route('/analysis', methods=['GET'])
 def show_analysis():
     db = get_db()
@@ -79,7 +78,24 @@ def show_analysis():
         r = ( reading[0], str(reading[1]), str(reading[2]), str(reading[3]) )
         print(str(r))
         readings_array_list.append(r)
-    return render_template('analysis.html', readings=json.dumps(readings_array_list))
+    return render_template('analysis.html', readings=json.loads(build_json()) )
+
+@app.route('/beers', methods=['GET'])
+def show_beers():
+    beers = BEER_DATABASE.get_beers()
+    bb = json.dumps(beers)
+    return render_template('beerlist.html', beers=bb)    
+    
+@app.route('/admin', methods=['GET', 'POST'])
+def show_admin():
+    error = None
+    if request.method == 'POST':
+        print("post recieved for admin")
+        print("interval :: " + str(request.form['interval']))
+        print("adminemail :: " + str(request.form['adminemail']))
+        flash('Admin Settings Changed')
+        return redirect(url_for('show_analysis'))
+    return render_template('admin.html', error=error)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
@@ -104,17 +120,20 @@ def login():
         else:
             session['logged_in'] = True
             flash('You were logged in')
-            return redirect(url_for('show_entries'))
-    return render_template('login.html', error=error)
+            return redirect(url_for('show_admin'))
+    return render_template('admin.html', error=error)
 
 
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_entries')) 
 
 
 if __name__ == '__main__':
     init_db()
+    if BEER_DATABASE == {} :
+        BEER_DATABASE = Beer_Database_Api()
+        
     app.run()

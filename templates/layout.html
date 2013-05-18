@@ -1,15 +1,21 @@
 <!doctype html>
 <title>Brew Tracker</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+<link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='js/jsDatePick/jsDatePick_ltr.min.css') }}" media="all"/>
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/graph.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/detail.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/legend.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/lines.css') }}">
 <div class=page>
-  <h1>Brew Tracker</h1>
-  <div class=metanav>
-  {% if not session.logged_in %}
-    <a href="{{ url_for('login') }}">log in</a>
-  {% else %}
-    <a href="{{ url_for('logout') }}">log out</a>
-  {% endif %}
-  </div>
+<!--   <h1>Brew Tracker</h1> -->
+<!--   <div class=metanav> -->
+<!--   {% if not session.logged_in %} -->
+<!--     <a href="{{ url_for('login') }}">log in</a> -->
+<!--   {% else %} -->
+<!--     <a href="{{ url_for('logout') }}">log out</a> -->
+<!--   {% endif %} -->
+<!--   </div> -->
   <div id="header">
     <h2>Brew Tracker</h2>
       <div class="center">
@@ -17,9 +23,10 @@
         <!--Menu Begin-->
         <div id="menu">
           <ul>
-            <li><a href="index.html"><span>Home</span></a></li>
-            <li><a href="analysis.html"><span>Analysis</span></a></li>
-            <li><a href="#"><span>Administrative</span></a></li>
+            <li><a href=""><span>Home</span></a></li>
+            <li><a href="analysis"><span>Analysis</span></a></li>
+            <li><a href="beers"><span>Beer Listing</span></a></li>
+            <li><a href="admin"><span>Administrative</span></a></li>
             <li><a href="#"><span>Contact</span></a></li>
           </ul>
         </div>

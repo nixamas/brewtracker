@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if not session.logged_in %}
+  <h2>Login</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('login') }}" method=post>
+    <dl>
+      <dt>Username:
+      <dd><input type=text name=username>
+      <dt>Password:
+      <dd><input type=password name=password>
+      <dd><input type=submit value=Login>
+    </dl>
+  </form>
+{% else %}
+    <h2>ADMINSTRATOR</h2>
+    <form action="{{ url_for('show_admin') }}" method=post>
+    <dl>
+      <dt>Measurement Interval:
+      <dd><input type=text name=interval>
+      <dt>Email:
+      <dd><input type=text name=adminemail>
+      <dd><input type=submit value=Save>
+    </dl>
+  </form>
+{% endif %}
+{% endblock %}

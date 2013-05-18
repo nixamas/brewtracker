@@ -6,9 +6,12 @@
 body {margin: 0px;padding: 0px;border: 0px;font-family:Arial, Helvetica, sans-serif;background:#E6E6E6;color:#666;}
 
 /*Fonts*/
-a { font-size:12px; color:#666;}
-a:link{color:#999999; text-decoration:none;}
-a:visited{color:#999999; text-decoration:none;}
+a { font-size:14px; color:#666;}
+a:link{color:#0B3A64; text-decoration:none;}
+a:visited{color:#459DE9; text-decoration:none;}
+b { font-size:12px; color:#666;}
+b:link{color:#999999; text-decoration:none;}
+b:visited{color:#999999; text-decoration:none;}
 h1 { font-size:20px; font-weight:bold; color:#333;}
 h2 { font-size:24px; font-weight:bold; color:#222; margin:0px;}
 h3 {font-size:14px; font-weight:bold; color:#333;}
@@ -23,7 +26,7 @@ h3 {font-size:14px; font-weight:bold; color:#333;}
 #bottomrow {width:960px;margin:0 auto;}
 
 /*LOGO*/
-#logo{padding-top:25px;width:207px;float:left;}
+#logo{width:150px;float:left;}
 #logo a{background:url(../images/brewtrackerlogo.png);display:block;width:370px;height:57px;text-indent:-10000px;}
 /*LOGO END*/
 
