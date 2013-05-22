@@ -1,4 +1,4 @@
-import sqlite3, random, datetime, jsonencoder
+import sqlite3, random, datetime
 
 def main():
     conn = sqlite3.connect("mydatabase.db")
@@ -33,8 +33,8 @@ def main():
     #for row in cursor.execute("SELECT rowid, * FROM readings ORDER BY time"):
         #print (str(row))
         
-    print("writing data to javascript file...")
-    jsonencoder.main()
+    #print("writing data to javascript file...")
+    #jsonencoder.main()
     
 def get_temperature():
     try:

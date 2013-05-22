@@ -11,13 +11,13 @@ def read_config():
     print str(parser)
     
 def get_reading_interval():
-    return int(get_value('reading_interval'))
+    return get_value('reading_interval')
 
 def get_desired_temp():
-    return int(get_value('desired_temp'))
+    return get_value('desired_temp')
 
 def get_range():
-    return int(get_value('range'))
+    return get_value('range')
 
 def get_admin_email():
     return get_value('admin_email')

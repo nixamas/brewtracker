@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block body %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/table.css') }}">
+	<h1>BREWERY LOOKUP</h1>
+	<a href="{{ brewery_url }}">{{ brewery_name }}</a>
+    
+    <div id="beer_div">    
+        <table id="beer_table" class="hovertable">
+        </table>
+    </div>
+<script type="text/javascript">
+  var BEERS = {{brewery_beers|safe}};
+</script>
+<script type="text/javascript">
+  window.onload = function(){
+      console.log("brewery.html loading...");
+//       console.log(BEERS);
+      console.log("*******************");
+      buildTable();
+  }
+  
+  function buildTable(){
+      if(BEERS != null && BEERS != undefined){
+          console.log("building table...")
+          console.log(BEERS)
+          var root = document.getElementById('beer_div');
+          var tab = document.createElement('table');
+          tab.className="hovertable";
+          var tbo = document.createElement('tbody');
+          var row, cell;
+          for(var i = 0; i < BEERS.length; i++){
+              var beer = BEERS[i];
+              row=document.createElement('tr');
+              cell=document.createElement('td');
+                  cell.appendChild(document.createTextNode(beer.name));
+                  row.appendChild(cell);
+              cell=document.createElement('td');
+                  cell.appendChild(document.createTextNode(beer.description));
+                  row.appendChild(cell);
+              cell=document.createElement('td');
+                  cell.appendChild(document.createTextNode(beer.abv));
+                  row.appendChild(cell);
+              row.onmouseover = function(){this.style.backgroundColor='#ffff66';} 
+              row.onmouseout = function(){this.style.backgroundColor='#d4e3e5';}
+              tbo.appendChild(row);
+          }
+          tab.appendChild(tbo);
+          root.appendChild(tab);
+      }
+  }
+</script>
+{% endblock %}

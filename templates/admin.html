@@ -16,21 +16,19 @@
     <h2>ADMINSTRATOR</h2>
     <form action="{{ url_for('show_admin') }}" method=post>
 	    <dl>
+	      <dt>Desired Temperature:
+	      <dd><input type=text name=desired_temp value={{desired_temp}}>^Fahrenheit
+	      <dt>Range:
+          <dd><input type=text name=range value={{range}}>^Fahrenheit [ Desired Temperature +/- (Range/2) ]
 	      <dt>Measurement Interval:
-	      <dd><input type=text name=interval>
+	      <dd><input type=text name=reading_interval value={{reading_interval}}>^Fahrenheit
 	      <dt>Email:
-	      <dd><input type=text name=adminemail>
+          <dd><input type=text name=admin_email value={{admin_email}}>
 	      <dd><input type=submit value=Save>
 	    </dl>
 	</form>
 	<h2>Debugging</h2>
-<!--     <form action="{{ url_for('show_debug') }}" method=post> -->
         <dl>
-<!--           <dt>Measurement Interval: -->
-<!--           <dd><input type=text name=interval> -->
-<!--           <dt>Email: -->
-<!--           <dd><input type=text name=adminemail> -->
-<!--           <dd><input type=submit value=Save> -->
           <button value="text" onclick="getDebugData()">Debug Data</button>
         </dl>
         
@@ -53,9 +51,6 @@ function getDebugData(){
         document.getElementById("debug_field_id").hidden = false
         document.getElementById("debug_field_text").hidden = false
         document.getElementById("debug_field_text").innerHTML = DEBUG_DATA.temp;
-//         REQUESTED_DATA_OBJECT = JSON.parse( data );
-//         parseDataReadings();
-//         plotData();
       });
 }
 </script>
