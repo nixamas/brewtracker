@@ -61,12 +61,6 @@ def close_db_connection(exception):
         top.sqlite_db.close()
 
 @app.route('/')
-def show_entries():
-    db = get_db()
-    cur = db.execute('select reading_time, reading_brew_temp, reading_amb_temp from readings order by id desc')
-    readings = cur.fetchall()
-    return render_template('show_entries.html', readings=readings)
-
 @app.route('/index')
 @app.route('/analysis', methods=['GET'])
 def show_analysis():
