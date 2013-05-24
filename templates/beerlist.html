@@ -38,7 +38,7 @@
                     var brewery = document.createTextNode(beer.brewery.name);
                     link.appendChild( brewery );
                     link.title = "BREWERY";
-                    link.href = "http://google.com";
+                    link.href = "/brewery/" + beer.brewery.id;
                     cell.appendChild(link);
                     row.appendChild(cell);
                 cell=document.createElement('td');

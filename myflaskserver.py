@@ -1,22 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-    Flaskr
-    ~~~~~~
-
-    A microblog example application written as Flask tutorial with
-    Flask and sqlite3.
-
-    :copyright: (c) 2010 by Armin Ronacher.
-    :license: BSD, see LICENSE for more details.
+    Brew Buddy.
 """
 from __future__ import with_statement
-from beerdatabaseapiparser import Beer_Database_Api
+from OpenBeerDataBaseAPI import Beer_Database_Api
 from datacapture import get_temperature
-from flask import Flask, request, session, redirect, url_for, abort, \
+from flask import Flask, request, session, redirect, url_for,  \
     render_template, flash, _app_ctx_stack
 from jsonencoder import build_json
 from sqlite3 import dbapi2 as sqlite3
-import json
+import SystemSettings, json
 
 # configuration
 DATABASE = 'flaskr.db'
@@ -77,8 +70,15 @@ def show_analysis():
 @app.route('/beers', methods=['GET'])
 def show_beers():
     beers = BEER_DATABASE.get_beers()
-    bb = json.dumps(beers)
-    return render_template('beerlist.html', beers=bb)    
+    beers_json = json.dumps(beers)
+    return render_template('beerlist.html', beers=beers_json)    
+
+@app.route('/brewery/<int:brewery_id>', methods=['GET'])
+def show_brewery(brewery_id):
+    brewery = BEER_DATABASE.get_brewery(brewery_id)
+    brewery_beers = BEER_DATABASE.get_beers_from_brewery(brewery_id)
+    brewery_beers_json = json.dumps(brewery_beers)
+    return render_template('brewery.html', brewery_name=brewery['name'], brewery_url=brewery['url'], brewery_beers=brewery_beers_json)
 
 @app.route('/debug', methods=['GET', 'POST'])
 def show_debug():
@@ -89,23 +89,23 @@ def show_debug():
 def show_admin():
     error = None
     if request.method == 'POST':
-        print("post recieved for admin")
-        print("interval :: " + str(request.form['interval']))
-        print("adminemail :: " + str(request.form['adminemail']))
+        print("post recieved for admin")    #Changing system settings
+        print("desired_temp :: " + str(request.form['desired_temp']))
+        SystemSettings.set_desired_temp( request.form['desired_temp'])
+        print("range :: " + str(request.form['range']))
+        SystemSettings.set_range( request.form['range'])
+        print("reading :: " + str(request.form['reading_interval']))
+        SystemSettings.set_reading_interval( request.form['reading_interval'] )
+        print("admin_email :: " + str(request.form['admin_email']))
+        SystemSettings.set_admin_email( request.form['admin_email'])
         flash('Admin Settings Changed')
-        return redirect(url_for('show_analysis'))
-    return render_template('admin.html', error=error)
-
-@app.route('/add', methods=['POST'])
-def add_entry():
-    if not session.get('logged_in'):
-        abort(401)
-    db = get_db()
-    db.execute('insert into readings (reading_time, reading_brew_temp, reading_amb_temp) values (?, ?, ?)',
-                 [request.form['reading_time'], request.form['reading_brew_temp'], request.form['reading_amb_temp']])
-    db.commit()
-    flash('New entry was successfully posted')
-    return redirect(url_for('show_entries'))
+        return redirect(url_for('show_admin'))
+    return render_template('admin.html', 
+                           error=error, 
+                           desired_temp=SystemSettings.get_desired_temp(), 
+                           range=SystemSettings.get_range(), 
+                           reading_interval=SystemSettings.get_reading_interval(), 
+                           admin_email=SystemSettings.get_admin_email())
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -133,3 +133,12 @@ if __name__ == '__main__':
         BEER_DATABASE = Beer_Database_Api()
         
     app.run()
+    
+    #enable server to listen on ip's
+    #app.run(host='0.0.0.0')
+    
+    
+    
+    
+    
+    
