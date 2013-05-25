@@ -5,14 +5,14 @@
 from __future__ import with_statement
 from OpenBeerDataBaseAPI import Beer_Database_Api
 from datacapture import get_temperature
-from flask import Flask, request, session, redirect, url_for,  \
-    render_template, flash, _app_ctx_stack
+from flask import Flask, request, session, redirect, url_for, render_template, flash, _app_ctx_stack
 from jsonencoder import build_json
 from sqlite3 import dbapi2 as sqlite3
-import SystemSettings, json
+import SystemSettings
+import json
 
 # configuration
-DATABASE = 'flaskr.db'
+DATABASE = 'brewtrackerdb.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
@@ -24,7 +24,7 @@ BEER_DATABASE = {}
 # create our little application :)
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+#app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
 def init_db():
     """Creates the database tables."""

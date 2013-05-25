@@ -1,9 +1,6 @@
-/*Template: Calliope
-  Author: Towfiq I.
-  website: www.towfiqi.com
-*/
-
 body {margin: 0px;padding: 0px;border: 0px;font-family:Arial, Helvetica, sans-serif;background:#E6E6E6;color:#666;}
+
+#loginlogout {font-size:14px;background:#222222;float:right;}
 
 /*Fonts*/
 a { font-size:14px; color:#666;}
@@ -43,11 +40,6 @@ h3 {font-size:14px; font-weight:bold; color:#333;}
 
 .center{width:960px;margin:0 auto;}
 
-/*SlideShow Begin*/
-#cu3er-container {margin-top:60px;padding-left:0px;padding-right:0px;width:960px;}
-#cubershadow{width:960px;height:372px;background:url(../images/shadow.jpg) no-repeat bottom;}
-/*SlideShow End*/
-
 /*Homepage Boxs*/
 #container {float:left;}
 .box {margin-top:20px;padding-top:10px;width:310px;height:auto;float:left;background:url(../images/border.jpg) no-repeat bottom right;}
@@ -55,12 +47,12 @@ h3 {font-size:14px; font-weight:bold; color:#333;}
 .box p {margin:0px;width:200px;padding:15px 5px 10px 5px;float:left;}
 .last{background:none;}
 
-a.plan{float:left;display:block;width:83px;height:101px;background:url(../images/plan.jpg) no-repeat 0px -101px;text-indent:-1000px;}
-a.plan:hover{ background-position: 0px 1px;}
-a.whyus{margin-top:10px;float:left;display:block;width:83px;height:87px;background:url(../images/whyus.jpg) no-repeat 0px 0px;text-indent:-1000px;}
-a.whyus:hover{ background-position: 0px -88px;}
-a.support{margin-top:14px;float:left;display:block;width:75px;height:91px;background:url(../images/draftbeer.jpg) no-repeat 0px 0px;text-indent:-1000px;}
-a.support:hover{ background-position: 0px -70px;}
+/* a.plan{float:left;display:block;width:83px;height:101px;background:url(../images/plan.jpg) no-repeat 0px -101px;text-indent:-1000px;} */
+/* a.plan:hover{ background-position: 0px 1px;} */
+/* a.whyus{margin-top:10px;float:left;display:block;width:83px;height:87px;background:url(../images/whyus.jpg) no-repeat 0px 0px;text-indent:-1000px;} */
+/* a.whyus:hover{ background-position: 0px -88px;} */
+/* a.support{margin-top:14px;float:left;display:block;width:75px;height:91px;background:url(../images/draftbeer.jpg) no-repeat 0px 0px;text-indent:-1000px;} */
+/* a.support:hover{ background-position: 0px -70px;} */
 
 a.button{background:url(../images/buttonr.gif) no-repeat right; padding:3px 0px; margin-left:2px; color:#CCCCCC; text-decoration:none; }
 .button span{background:url(../images/buttonl.gif) no-repeat left; padding:3px 5px;}
@@ -84,8 +76,6 @@ a.button{background:url(../images/buttonr.gif) no-repeat right; padding:3px 0px;
 
 .textbox{float:left;padding:50px 0px;width:700px;}
 .textbox2{padding:10px 30px; background:url(../images/textbox2bg.gif) repeat-x;}
-.feed{width:auto; float:left;}
-.feed img{ border: solid 0px; margin-top:120px; padding:0px 7px;}
 
 /* New things */
 .demo-container {
@@ -113,27 +103,4 @@ a.button{background:url(../images/buttonr.gif) no-repeat right; padding:3px 0px;
 	height: 100%;
 	font-size: 14px;
 	line-height: 1.2em;
-}
-
-/* RICKSHAW */
-#chart_container {
-        position: relative;
-        font-family: Arial, Helvetica, sans-serif;
-        display: block;
-        margin-left:auto;
-        margin-right:auto;
-        left: 60px;
-}
-#chart {
-        position: relative;
-        left: 40px;
-}
-.rickshaw_graph .y_ticks {
-        left: 0;
-}
-#y_axis {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 40px;
 }
