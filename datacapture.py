@@ -10,13 +10,14 @@ def main():
     
     try:
         with open('/sys/bus/w1/devices/28-000004b5fbb9/w1_slave') as f: 
-            print("found file...")
+            print("found temperature sensor file...")
             content = f.readlines()
             lVal = str(content[1])  #get 2nd line of file
             temp = lVal.rsplit('=',1)   #split temp value out
+	    print("parsed data ::: " + str(temp[1]))
             tC = ( int(temp[1])/1000)   #find C
             tF = ( tC * (9/5) + 32 )    #find F
-            print("file line 2 :: " + str(tC) + "^C -- " + str(tF) + "^F ")
+            print("temperatures :: " + str(tC) + "^C -- " + str(tF) + "^F ")
     except IOError:
         print ("No Temperatue Sensor was found... Storing Random data...")  
         tF = random.randrange(55, 83)

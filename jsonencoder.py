@@ -10,14 +10,14 @@ def main():
         cnt = 0
         for row in cursor.execute("SELECT rowid, * FROM readings ORDER BY time"):
             rdng = '{"id":"' + str(row[0]) + '","time":"' + str(row[1]) + '","value":"' + str(row[2]) + '"},'
-            print (rdng)
+            #print (rdng)
             readings = readings + rdng
             cnt += 1
            
         readings = readings[:-1]    #remove last comma
         readings = readings + ']}'
         readings = readings % cnt
-        print(str(readings))
+        #print(str(readings))
     
         json.dump(readings, f, ensure_ascii=False)
         
@@ -26,6 +26,8 @@ def main():
         f.write('   console.log("Returning data to analysis.html..."); ')
         f.write('   return datareadings; ')
         f.write("}")
+
+	print('javascript file written!!')
         
 def build_json():
     print("building json object")
