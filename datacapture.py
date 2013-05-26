@@ -1,11 +1,11 @@
 import sqlite3, random, datetime
 
 def main():
-    conn = sqlite3.connect("mydatabase.db")
+    conn = sqlite3.connect("brewtrackerdb.db")
 
     cursor = conn.cursor()
 
-    cursor.execute("""create table if not exists readings (time text, temperature text)""")
+    #cursor.execute("""create table if not exists readings (time text, temperature text)""")
     #Get Readings from the sensors
     
     try:
@@ -26,16 +26,10 @@ def main():
 
     time = str(datetime.datetime.now()).split('.')[0]
     #Store Readings into the database
-    cursor.execute("INSERT INTO readings VALUES ('" + time + "', '" + temperature + "')")
+    cursor.execute("INSERT INTO readings (reading_time, reading_brew_temp, reading_amb_temp) VALUES ('" + time + "', '" + temperature + "')")
     print("sql ~ INSERT INTO readings VALUES ('" + time + "', '" + temperature + "')")
     conn.commit()
 
-    #print ("\nHere's a listing of all the records in the table:\n")
-    #for row in cursor.execute("SELECT rowid, * FROM readings ORDER BY time"):
-        #print (str(row))
-        
-    #print("writing data to javascript file...")
-    #jsonencoder.main()
     
 def get_temperature():
     try:
@@ -54,5 +48,23 @@ def get_temperature():
         
     return "Fahrenheit :: " + str(tF) + " ---- Celsius :: " + str(tC)
 
+def insert_dummy_data(day):
+    try:
+        conn = sqlite3.connect("brewtrackerdb.db")
+    
+        cursor = conn.cursor()
+        brewT = random.randrange(50, 65)
+        ambT = random.randrange(66, 80)
+        
+        #time = str(datetime.datetime.now()).split('.')[0]
+        time = str( datetime.datetime(2013,2,day) )
+        cursor.execute("INSERT INTO readings (reading_time, reading_brew_temp, reading_amb_temp) VALUES ('" + time + "', '" + str(brewT) + "', '" + str(ambT) + "')")
+        print("sql ~~ INSERT INTO readings VALUES ('" + time + "', '" + str(brewT) + "', '" + str(ambT) + "')")
+        conn.commit()
+    except Exception:
+        print("EXCEPTION ::::::: " + str(Exception))
+
 if __name__ == "__main__":
-    main()
+    #main()
+    for x in range(1,25):
+        insert_dummy_data(x)

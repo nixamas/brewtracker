@@ -19,6 +19,7 @@
                     
     $(function () {
 //     	console.log(FLASK_DATA);
+        console.log(FLASK_DATA)
         console.log( FLASK_DATA_OBJ = JSON.parse(FLASK_DATA) );
     	parseFlaskDataReadings();
         $('#container').highcharts({
@@ -65,9 +66,9 @@
 	function parseFlaskDataReadings(){
 	       console.log("parsing the data readigns...");
 	       for(var i = 0; i< parseInt( FLASK_DATA_OBJ.count ); i++){
-	    	   var d = new Date( Date.parse(FLASK_DATA_OBJ.readings[i].time) );
+	    	   var d = new Date( Date.parse(FLASK_DATA_OBJ.readings[i].reading_time) );
 	    	   d.setHours( d.getHours() - 5 );
-	    	   DATA_READINGS_RICKSHAW[i] = [ d.getTime() , parseInt( FLASK_DATA_OBJ.readings[i].value ) ];//Date.parse(FLASK_DATA_OBJ.readings[i].time)
+	    	   DATA_READINGS_RICKSHAW[i] = [ d.getTime() , parseInt( FLASK_DATA_OBJ.readings[i].reading_brew_temp ) ];//Date.parse(FLASK_DATA_OBJ.readings[i].time)
 	       }
 	   }
 	
