@@ -8,7 +8,7 @@ def main():
         cursor = conn.cursor()
         readings = '{"count":"%s","readings":['     #start of json object
         cnt = 0
-        for row in cursor.execute("SELECT rowid, * FROM readings ORDER BY reading_time"):
+        for row in cursor.execute("SELECT * FROM readings ORDER BY reading_time"):
             rdng = '{"id":"' + str(row[0]) + '","reading_time":"' + str(row[1]) + '","reading_brew_temp":"' + str(row[2])+ '","reading_amb_temp":"' + str(row[3]) + '"},'
             #print (rdng)
             readings = readings + rdng
@@ -36,7 +36,7 @@ def build_json():
         cursor = conn.cursor()
         readings = '{"count":"%s","readings":['     #start of json object
         cnt = 0
-        q = cursor.execute("SELECT rowid, * FROM readings ORDER BY reading_time")
+        q = cursor.execute("SELECT * FROM readings ORDER BY reading_time")
         print("QUERY ::: " +str(q))
         for row in q:
             rdg = '{"id":"' + str(row[0]) + '","reading_time":"' + str(row[1]) + '","reading_brew_temp":"' + str(row[2])+ '","reading_amb_temp":"' + str(row[3]) + '"},'

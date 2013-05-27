@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2>My Brew</h2>
+    <form action="{{ url_for('add_brew') }}" method=post>
+        <dl>
+          <dd><input id="brew_id" hidden="true" value={{brew_id}}>
+          <dt>Name
+          <dd><input type=text name=name value={{name}}>
+          <dt>Brew Date
+          <dd><input type=text name=brew_date value={{brew_date}}>
+          <dt>Second Stage Transfer Date
+          <dd><input type=text name=second_stage_date value={{second_stage_date}}>
+          <dt>Bottling Date
+          <dd><input type=text name=bottle_date value={{bottle_date}}>
+          <dt>ABV
+          <dd><input type=text name=abv value={{abv}}>
+          <dt>Volume
+          <dd><input type=text name=volume_brewed value={{volume_brewed}}>
+          <dt>Ingredients
+          <dd><input type=text name=ingredients value={{ingredients}}>
+          <dt>Notes
+          <dd><input type=text name=notes value={{notes}}>
+          <dd><input type=submit value="Save Brew">
+        </dl>
+    </form>
+<script type="text/javascript">
+
+</script>
+{% endblock %}

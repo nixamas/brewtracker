@@ -12,13 +12,13 @@
     <div id="container" style="width: 100%; height: 400px; margin: 20 auto"></div>
        
   <script type="text/javascript">
-    var DATA_READINGS_RICKSHAW = [];
+    var DATA_BREW_TEMP_READINGS = [];
+    var DATA_AMB_TEMP_READINGS = [];
     var REQUESTED_DATA_OBJECT = null;
     var FLASK_DATA = '{{ readings|safe }}';
     var FLASK_DATA_OBJ = null;
                     
     $(function () {
-//     	console.log(FLASK_DATA);
         console.log(FLASK_DATA)
         console.log( FLASK_DATA_OBJ = JSON.parse(FLASK_DATA) );
     	parseFlaskDataReadings();
@@ -50,35 +50,24 @@
             },
             series: [{
                 name: 'Brew Temperature',
-                // Define the data points. All series have a dummy year
-                // of 1970/71 in order to be compared on the same x axis. Note
-                // that in JavaScript, months start at 0 for January, 1 for February etc.
-                data: DATA_READINGS_RICKSHAW
+                data: DATA_BREW_TEMP_READINGS
+            }
+            ,{
+                name: 'Ambient Temperature',
+                data: DATA_AMB_TEMP_READINGS
             }]
         });
     });
-
-// 	window.onload = function(){
-//         console.log("init page...");
-//         console.log("test data rcvd....");
-// 	};
 
 	function parseFlaskDataReadings(){
 	       console.log("parsing the data readigns...");
 	       for(var i = 0; i< parseInt( FLASK_DATA_OBJ.count ); i++){
 	    	   var d = new Date( Date.parse(FLASK_DATA_OBJ.readings[i].reading_time) );
 	    	   d.setHours( d.getHours() - 5 );
-	    	   DATA_READINGS_RICKSHAW[i] = [ d.getTime() , parseInt( FLASK_DATA_OBJ.readings[i].reading_brew_temp ) ];//Date.parse(FLASK_DATA_OBJ.readings[i].time)
+	    	   DATA_BREW_TEMP_READINGS[i] = [ d.getTime() , parseInt( FLASK_DATA_OBJ.readings[i].reading_brew_temp ) ];//Date.parse(FLASK_DATA_OBJ.readings[i].time)
+	    	   DATA_AMB_TEMP_READINGS[i] = [ d.getTime() , parseInt( FLASK_DATA_OBJ.readings[i].reading_amb_temp ) ]
 	       }
 	   }
-	
-//     function parseDataReadings(){
-// 	   console.log("parsing the data readigns...");
-// 	   for(var i = 0; i< REQUESTED_DATA_OBJECT.readings.length; i++){
-//            DATA_READINGS_RICKSHAW[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value)};
-//            DATA_READINGS_RICKSHAW_2[i] = {"x":( moment(REQUESTED_DATA_OBJECT.readings[i].time).subtract("hours", 5).unix() ), "y": parseInt(REQUESTED_DATA_OBJECT.readings[i].value * 2 )};
-//        }
-//    }
 
   </script>
 {% endblock %}

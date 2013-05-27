@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2>My Brews</h2>
+    <table id="brew_table" class="hovertable">
+        <tbody id="brew_table_body">
+            <tr>
+                <th>Name</th>
+                <th>Brew Date</th>
+                <th>2nd Fermentation Date</th>
+                <th>Bottle Date</th>
+                <th>Volume Brewed</th>
+                <th>ABV</th>
+            </tr>
+        </tbody>
+    </table>
+<script type="text/javascript">
+var MY_BREWS = {{ my_brews|safe }};
+var BREWS = null;
+window.onload = function(){
+	console.log("loading mybrews.html");
+	//BREWS = Json.parse( MY_BREWS );
+	console.log(MY_BREWS);
+	buildTable();
+}
+
+function buildTable(){
+	console.log("building table");
+	for(var i = 0; i < MY_BREWS.length; i++){
+		console.log("table row " + i);
+		var brew = MY_BREWS[i];
+		console.log(brew);
+		var tbody = document.getElementById("brew_table_body");
+		row=document.createElement('tr');
+        cell=document.createElement('td');
+	        var link = document.createElement('a');
+	        var mybrewname = document.createTextNode(brew.name);
+	        link.appendChild( mybrewname );
+	        link.title = "BREWERY";
+	        link.href = "/mybrew/" + brew.id;
+	        cell.appendChild(link);
+	        row.appendChild(cell);
+        cell=document.createElement('td');
+            cell.appendChild(document.createTextNode(brew.brew_date));
+            row.appendChild(cell);
+        cell=document.createElement('td');
+            cell.appendChild(document.createTextNode(brew.second_stage_date));
+            row.appendChild(cell);
+        cell=document.createElement('td');
+            cell.appendChild(document.createTextNode(brew.bottle_date));
+            row.appendChild(cell);
+        cell=document.createElement('td');
+            cell.appendChild(document.createTextNode(brew.volume_brewed));
+            row.appendChild(cell);
+        cell=document.createElement('td');
+            cell.appendChild(document.createTextNode(brew.abv));
+            row.appendChild(cell);
+        row.onmouseover = function(){this.style.backgroundColor='#ffff66';} 
+        row.onmouseout = function(){this.style.backgroundColor='#d4e3e5';}
+        tbody.appendChild(row);
+	}
+	
+}
+</script>
+{% endblock %}
