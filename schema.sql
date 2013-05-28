@@ -18,6 +18,7 @@ create table if not exists mybeer (
 );
 
 create table if not exists gravity_readings (
+  brew_id integer DEFAULT '-1',
   id integer DEFAULT '-1',
   gravity_reading_time text,
   gravity_reading text

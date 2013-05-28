@@ -98,15 +98,40 @@ def show_my_brew(my_brew_id=None):
     if request.method == 'GET':
         if my_brew_id:
             my_brew = handler.get_beer_by_id(my_brew_id)
-            return render_template( 'mybrew.html', brew_id=str(my_brew[0]), name=str(my_brew[1]), ingredients=str(my_brew[2]), brew_date=str(my_brew[3]), second_stage_date=str(my_brew[4]), bottle_date=str(my_brew[5]), abv=str(my_brew[6]), volume_brewed=str(my_brew[7]), notes=str(my_brew[8]) )#
+            my_brew_gravity_readings = handler.get_gravity_readings_for_beer(my_brew_id)
+            return render_template( 'mybrew.html', brew_id=str(my_brew[0]), name=str(my_brew[1]), 
+                                    ingredients=str(my_brew[2]), brew_date=str(my_brew[3]), 
+                                    second_stage_date=str(my_brew[4]), bottle_date=str(my_brew[5]), 
+                                    abv=str(my_brew[6]), volume_brewed=str(my_brew[7]), 
+                                    notes=str(my_brew[8]), gravity_readings=json.dumps(my_brew_gravity_readings) )#
         else:
             return render_template( 'mybrew.html', brew_id=str("-1"), name=str(""), ingredients=str(""), brew_date=str(""), second_stage_date=str(""), bottle_date=str(""), abv=str(""), volume_brewed=str(""), notes=str("") )
     elif request.method == 'POST':
         flash('Data updated...')
-        handler.update_my_beer(my_brew_id, request.form['name'], request.form['ingredients'], request.form['brew_date'], request.form['second_stage_date'], request.form['bottle_date'], request.form['abv'], request.form['volume_brewed'], request.form['notes'])
+        handler.update_my_beer(my_brew_id, request.form['name'], request.form['ingredients'], 
+                               request.form['brew_date'], request.form['second_stage_date'], 
+                               request.form['bottle_date'], request.form['abv'], request.form['volume_brewed'], request.form['notes'])
+        my_brew_gravity_readings = handler.get_gravity_readings_for_beer(my_brew_id)
         return render_template( 'mybrew.html', brew_id=str(my_brew_id), name=str(request.form['name']), ingredients=str(request.form['ingredients']), 
                                 brew_date=str(request.form['brew_date']), second_stage_date=str(request.form['second_stage_date']), bottle_date=str(request.form['bottle_date']), 
-                                abv=str(request.form['abv']), volume_brewed=str(request.form['volume_brewed']), notes=str(request.form['notes']) )
+                                abv=str(request.form['abv']), volume_brewed=str(request.form['volume_brewed']), notes=str(request.form['notes']), gravity_readings=json.dumps(my_brew_gravity_readings) )
+
+@app.route('/addgravityreading/<my_brew_id>', methods=['POST'])
+def add_gravity_reading(my_brew_id):
+    print("adding gravity reading");
+    handler = HomeBrewTrackerDataBase()
+    if request.method == 'POST':
+        try:
+            flash('Gravity Reading Saved');
+            print("************* gravity reading *************")
+            print(str(request.form['gravity_readings']))
+            handler.parse_and_insert_gravity_readings(my_brew_id, request.form['gravity_readings'])
+            #print(str(request.form['gr_brew_id']))
+            print("************* gravity reading *************")
+            return redirect(url_for('show_my_brew', my_brew_id=my_brew_id))
+        except Exception:
+            print("EXCETPION :: " + str(Exception.message) )
+    
 
 @app.route('/addbrew', methods=['GET','POST'])
 def add_brew():

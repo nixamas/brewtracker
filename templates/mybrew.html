@@ -1,33 +1,226 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h2>My Brew</h2>
-    <form action="{{ url_for('show_my_brew', my_brew_id=brew_id) }}" method=post>
-    <form action="{{ url_for('show_my_brew', my_brew_id=brew_id) }}" method=put>
-        <dl>
-          <dd><input id="brew_id" hidden="true" value={{brew_id}}>
-          <dt>Name
-          <dd><input type=text name=name value={{name}}>
-          <dt>Brew Date
-          <dd><input type=text name=brew_date value={{brew_date}}>
-          <dt>Second Stage Transfer Date
-          <dd><input type=text name=second_stage_date value={{second_stage_date}}>
-          <dt>Bottling Date
-          <dd><input type=text name=bottle_date value={{bottle_date}}>
-          <dt>ABV
-          <dd><input type=text name=abv value={{abv}}>
-          <dt>Volume
-          <dd><input type=text name=volume_brewed value={{volume_brewed}}>
-          <dt>Ingredients
-          <dd><input type=text name=ingredients value={{ingredients}}>
-          <dt>Notes
-          <dd><input type=text name=notes value={{notes}}>
-          <dd><input type=submit value="Save Brew">
-          <dd><input type=reset value="Delete">
-			
-        </dl>
-    </form>
-    </form>
-<script type="text/javascript">
+<script type="text/css">
 
 </script>
+<!-- <div id="container" style="width:100%">
+    <div inline="true" width="75%" style="background-color:#FFA500;"><br><br><br></div>
+    <div inline="true" width="25%" style="background-color:#FFA5FF;"><br><br><br></div>
+</div>-->
+<div id="container">    
+    <div id="content">
+            <form action="{{ url_for('add_gravity_reading', my_brew_id=brew_id) }}" method=post id="gr_form" class="editable">
+                <input id="gr_brew_id" hidden="true" value="{{brew_id}}">
+                <input id="gravity_readings" name="gravity_readings" hidden="true" value="{{ gravity_readings }}">
+            </form>
+            <form action="{{ url_for('show_my_brew', my_brew_id=brew_id) }}" method=post id="mybrew_form" class="editable">
+		<!--     <form action="{{ url_for('show_my_brew', my_brew_id=brew_id) }}" method=put> -->
+		        <fieldset>
+		           <legend><h2>{{name}}</h2></legend>
+		           <input id="brew_id" hidden="true" value="{{brew_id}}">
+		           <input id="gravity_readings" name="gravity_readings" hidden="true" value="{{ gravity_readings }}">
+		           <div>
+		               <label for="name">Name</label> 
+		               <input type=text id="name" name=name value="{{name}}" class="field">
+		           </div>
+		           <div>
+		               <label for="brew_date">Brew Date</label> 
+		               <input type=text name="brew_date" value="{{brew_date}}" class="field">
+		           </div>
+		           <div>
+		               <label for="second_stage_date">Second Stage Transfer Date</label> 
+		               <input type=text name="second_stage_date" value="{{second_stage_date}}" class="field">
+		           </div>
+		           <div>
+		               <label for="bottle_date">Bottling Date</label> 
+		               <input type=text name="bottle_date" value="{{bottle_date}}" class="field">
+		           </div>
+		           <div>
+		               <label for="abv">ABV</label> 
+		               <input type=text name="abv" value="{{abv}}" class="field">
+		           </div>
+		           <div>
+		               <label for="volume_brewed">Volume</label> 
+		               <input type=text name="volume_brewed" value="{{volume_brewed}}" class="field">
+		           </div>
+		           <div>
+		               <label for="ingredients">Ingredients</label> 
+		               <input type=text name="ingredients" value="{{ingredients}}" class="field">
+		           </div>
+		           <div>
+		               <label for="notes">Notes</label>
+		               <textarea name="notes" class="field" rows="2" cols="60">{{notes}}</textarea>
+		           </div>
+<!-- 		           <input type=submit value="Update Brew Data" id="save_btn"> -->
+                    <button id="save_btn" onclick="onSave()">Save</button>
+		       </fieldset>
+		    </form>
+    </div>
+    <div id="sidebar">
+        <table style="width:100%" id="gravity_reading_table" class="hovertable">
+	        <tbody style="width:100%" id="gravity_reading_table_body">
+	            <tr style="width:100%">
+	               <td style="width:25px">
+                       <button  id="new_gravity_reading_btn" style="width:60px" onclick="newGravityReading()">New GR</button>
+                   </td>
+	               <th>Date of Gravity Reading</th>
+	               <th>Gravity Reading</th>
+	            </tr>
+<!-- 	            <tr> -->
+<!-- 	               <td> -->
+<!-- 	                   <input type=button value="New Gravity Reading" id="new_gravity_reading_btn"/> -->
+<!-- 	               </td> -->
+<!-- 	            </tr> -->
+	        </tbody>
+	    </table>
+    </div>
+</div>
+<script type="text/javascript">
+var GRAVITY_READINGS = {{ gravity_readings|safe }};
+window.onload = function(){
+	console.log("mybrew.html");
+	console.log(GRAVITY_READINGS);
+	buildGravityReadingTable();
+// 	debugger;
+}
+function onSave(){
+	console.log("onSave");
+	form  = document.getElementById("mybrew_form");
+	form.gravity_readings
+}
+function buildGravityReadingTable(){
+	console.log("building gravity reading table");
+	if( GRAVITY_READINGS.length > 0){
+		var tbody = document.getElementById("gravity_reading_table_body");
+        for(var i = 0; i < GRAVITY_READINGS.length; i++){
+            console.log("table row " + i);
+            var reading = GRAVITY_READINGS[i];
+            console.log(reading);
+            row=document.createElement('tr');
+            cell = document.createElement('td');    //button cell
+                btn = document.createElement('button');
+                btn.setAttribute('id', 'gr_btn_' + (i) );
+                btn.setAttribute('onclick', "save_edit_gr(this,'" + i + "','" + row + "')")
+                btn.appendChild(document.createTextNode("Edit"));
+                btn.setAttribute('state','saved');
+                cell.appendChild( btn );
+                row.appendChild(cell);
+            cell=document.createElement('td');      //time cell
+                input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('id','gr_time_inpt_' + i );
+                input.setAttribute('value', reading.gravity_reading_time);
+                input.setAttribute('disabled', 'disabled');
+                cell.appendChild(input);
+                row.appendChild(cell);
+            cell=document.createElement('td');  //value cell
+                input = document.createElement('input');
+                input.setAttribute('type', 'text');
+                input.setAttribute('id','gr_val_inpt_' + i );
+                input.setAttribute('value', reading.gravity_reading);
+                input.setAttribute('disabled', 'disabled');
+                cell.appendChild(input);
+                row.appendChild(cell);
+            row.onmouseover = function(){this.style.backgroundColor='#ffff66';} 
+            row.onmouseout = function(){this.style.backgroundColor='#d4e3e5';}
+            tbody.appendChild(row);
+        }
+    }else{
+        var tbody = document.getElementById("gravity_reading_table_body");
+        row=document.createElement('tr');
+        row.setAttribute('style','width:100%');
+        row.setAttribute('id','no_reading_row');
+        cell=document.createElement('td');
+	        cell.setAttribute('style','visbility:none;width:25%;');
+	        row.appendChild(cell);
+        cell=document.createElement('td');
+	        cell.setAttribute('colspan','2');
+	        cell.appendChild(document.createTextNode("No Gravity Readings Taken Yet..."));
+	        row.appendChild(cell);
+        tbody.appendChild(row);
+    }
+}
+function newGravityReading(){
+	console.log("new gravity reading");
+// 	debugger;
+	var tableBody = document.getElementById("gravity_reading_table_body");
+	if(document.getElementById("no_reading_row") != undefined){
+		console.log("found the no_reading_row in table, removing and adding new row");
+		tableBody.removeChild(document.getElementById("no_reading_row"));
+	}
+	row = document.createElement('tr');
+	row.setAttribute('id', 'gr_row_' + (tableBody.childElementCount) );
+	cell = document.createElement('td');
+		btn = document.createElement('button');
+	    btn.setAttribute('id', 'gr_btn_' + (row_id) );
+	    btn.setAttribute('onclick', "save_edit_gr(this,'" + row_id + "','" + row + "')")
+	    btn.appendChild(document.createTextNode("Save"));
+	    btn.setAttribute('state','edit');
+	    cell.appendChild( btn );
+	    row.appendChild(cell)
+	cell = document.createElement('td');
+	    input = document.createElement('input');
+	    input.setAttribute('type', 'text');
+	    input.setAttribute('id','gr_time_inpt_' + tableBody.childElementCount);
+	    cell.appendChild(input);
+	    row.appendChild(cell)
+	cell = document.createElement('td');
+	    input = document.createElement('input');
+        input.setAttribute('type', 'text');
+        input.setAttribute('id','gr_val_inpt_' + tableBody.childElementCount);
+        cell.appendChild(input);
+	    row.appendChild(cell)
+	tableBody.appendChild(row);
+}
+function createGravityReadingBtn(row, row_id){
+	btn = document.createElement('button');
+    btn.setAttribute('id', 'gr_btn_' + (row_id) );
+    btn.setAttribute('onclick', "save_edit_gr(this,'" + row_id + "','" + row + "')")
+    btn.appendChild(document.createTextNode("Save"));
+    btn.setAttribute('state','edit');
+    return btn;
+}
+function save_edit_gr(elem, row_id, row){
+	console.log("save_edit_gr :: " + elem + "  --  " + row_id + "  -----   " + row);
+	if( elem.getAttribute("state") == "edit" ){
+		console.log("currently editing, now saving....");
+		elem.setAttribute("state","saved");
+		elem.innerHTML = "Edit";
+		//send data
+		form = document.getElementById("gr_form");
+	    form.gravity_readings.value = getGravityReadings();
+	    form.submit();
+	    document.getElementById('gr_time_inpt_' + row_id).setAttribute('disabled');
+	    document.getElementById('gr_val_inpt_' + row_id).setAttribute('disabled');
+	}else if( elem.getAttribute("state") == "saved" ){
+		console.log("currently saved, user wants to edit....");
+		elem.setAttribute("state","edit");
+		elem.innerHTML = "Save";
+// 		debugger;
+		document.getElementById('gr_time_inpt_' + row_id).removeAttribute('disabled');
+        document.getElementById('gr_val_inpt_' + row_id).removeAttribute('disabled');
+	}
+}
+function getGravityReadings(){
+	var gr = "";
+	rows = document.getElementById("gravity_reading_table_body").children;
+	for(var i = 0; i < document.getElementById("gravity_reading_table_body").children.length; i++){
+		console.log("row :: " + i);
+		if(i != 0){//not header row
+            var gr_time = rows[i].children[1].children[0].value
+            var gr_val = rows[i].children[2].children[0].value;
+			gr = gr + (i-1) + ";" + gr_time + ";" + gr_val + "#";
+		}
+	}
+	console.log("gathered gravity readings ::: " + gr);
+	return gr;
+}
+</script>
 {% endblock %}
+
+
+
+
+
+
+

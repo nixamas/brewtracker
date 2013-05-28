@@ -13,6 +13,7 @@
             </tr>
         </tbody>
     </table>
+    <input id="add_new_btn" type=button value="Add New" onclick='createNewBrew'/>
 <script type="text/javascript">
 var MY_BREWS = {{ my_brews|safe }};
 var BREWS = null;
@@ -21,44 +22,62 @@ window.onload = function(){
 	//BREWS = Json.parse( MY_BREWS );
 	console.log(MY_BREWS);
 	buildTable();
+	addNewBtn = document.getElementById("add_new_btn");
+	addNewBtn.onclick = createNewBrew;
 }
 
 function buildTable(){
 	console.log("building table");
-	for(var i = 0; i < MY_BREWS.length; i++){
-		console.log("table row " + i);
-		var brew = MY_BREWS[i];
-		console.log(brew);
+	if( MY_BREWS.length > 0){
+		for(var i = 0; i < MY_BREWS.length; i++){
+			console.log("table row " + i);
+			var brew = MY_BREWS[i];
+			console.log(brew);
+			var tbody = document.getElementById("brew_table_body");
+			row=document.createElement('tr');
+	        cell=document.createElement('td');
+		        var link = document.createElement('a');
+		        var mybrewname = document.createTextNode(brew.name);
+		        link.appendChild( mybrewname );
+		        link.title = "BREWERY";
+		        link.href = "/mybrew/" + brew.id;
+		        cell.appendChild(link);
+		        row.appendChild(cell);
+	        cell=document.createElement('td');
+	            cell.appendChild(document.createTextNode(brew.brew_date));
+	            row.appendChild(cell);
+	        cell=document.createElement('td');
+	            cell.appendChild(document.createTextNode(brew.second_stage_date));
+	            row.appendChild(cell);
+	        cell=document.createElement('td');
+	            cell.appendChild(document.createTextNode(brew.bottle_date));
+	            row.appendChild(cell);
+	        cell=document.createElement('td');
+	            cell.appendChild(document.createTextNode(brew.volume_brewed));
+	            row.appendChild(cell);
+	        cell=document.createElement('td');
+	            cell.appendChild(document.createTextNode(brew.abv));
+	            row.appendChild(cell);
+	        row.onmouseover = function(){this.style.backgroundColor='#ffff66';} 
+	        row.onmouseout = function(){this.style.backgroundColor='#d4e3e5';}
+	        tbody.appendChild(row);
+		}
+	}else{
 		var tbody = document.getElementById("brew_table_body");
 		row=document.createElement('tr');
-        cell=document.createElement('td');
-	        var link = document.createElement('a');
-	        var mybrewname = document.createTextNode(brew.name);
-	        link.appendChild( mybrewname );
-	        link.title = "BREWERY";
-	        link.href = "/mybrew/" + brew.id;
-	        cell.appendChild(link);
-	        row.appendChild(cell);
-        cell=document.createElement('td');
-            cell.appendChild(document.createTextNode(brew.brew_date));
-            row.appendChild(cell);
-        cell=document.createElement('td');
-            cell.appendChild(document.createTextNode(brew.second_stage_date));
-            row.appendChild(cell);
-        cell=document.createElement('td');
-            cell.appendChild(document.createTextNode(brew.bottle_date));
-            row.appendChild(cell);
-        cell=document.createElement('td');
-            cell.appendChild(document.createTextNode(brew.volume_brewed));
-            row.appendChild(cell);
-        cell=document.createElement('td');
-            cell.appendChild(document.createTextNode(brew.abv));
-            row.appendChild(cell);
-        row.onmouseover = function(){this.style.backgroundColor='#ffff66';} 
-        row.onmouseout = function(){this.style.backgroundColor='#d4e3e5';}
-        tbody.appendChild(row);
+		row.appendChild(document.createTextNode("No Brews Created Yet..."));
+// 		cell=document.createElement('td');
+// 		cell.appendChild(document.createTextNode("No Brews Created Yet..."));
+// 		row.appendChild(cell);
+		tbody.appendChild(row);
 	}
 	
 }
+
+function createNewBrew(){
+	console.log("createNewBrew");
+	window.location = window.location.origin + "/addbrew"
+}
+
 </script>
 {% endblock %}

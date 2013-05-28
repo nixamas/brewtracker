@@ -38,6 +38,34 @@ h3 {font-size:14px; font-weight:bold; color:#333;}
 #menu ul li a:hover span{background:url(../images/menul.gif) no-repeat left; padding:5px 10px;color:#333;}
 /*Menu End*/
 
+.editable .field:focus{
+    border:2px solid #dfdfdf;
+    padding:5px;
+    background:#fff url(../img/bg_input.gif) repeat-x;
+    width:300px;
+    line-height:1em;
+    margin:0;
+    outline:none;
+}
+.editable .field{
+    border:none;
+    background:transparent url(../img/ico_edit.gif) no-repeat 0 50%;
+    padding:7px 0 7px 20px;
+    width:300px;
+    line-height:1em;
+    margin:0;
+    font-weight:bold;
+}
+.editable .field:focus, .editable .focused{
+    border:2px solid #dfdfdf;
+    padding:5px;
+    background:#fff url(../img/bg_input.gif) repeat-x;
+    width:300px;
+    line-height:1em;
+    margin:0;
+    outline:none;
+}
+
 .center{width:960px;margin:0 auto;}
 
 /*Homepage Boxs*/
@@ -103,4 +131,28 @@ a.button{background:url(../images/buttonr.gif) no-repeat right; padding:3px 0px;
 	height: 100%;
 	font-size: 14px;
 	line-height: 1.2em;
+}
+
+
+
+
+
+
+#container {
+    width:960px;
+    margin:20px auto;
+}
+
+#content {
+    float:left;
+    width:620px;
+}
+
+#sidebar {
+    float:left;
+    width:340px;
+}
+
+#footer {
+    clear:both;
 }
