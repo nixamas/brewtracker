@@ -13,7 +13,7 @@
             </tr>
         </tbody>
     </table>
-    <input id="add_new_btn" type=button value="Add New" onclick='createNewBrew'/>
+    <button id="add_new_btn" onclick='createNewBrew'>Add New</button>
 <script type="text/javascript">
 var MY_BREWS = {{ my_brews|safe }};
 var BREWS = null;
@@ -65,7 +65,11 @@ function buildTable(){
 	}else{
 		var tbody = document.getElementById("brew_table_body");
 		row=document.createElement('tr');
-		row.appendChild(document.createTextNode("No Brews Created Yet..."));
+		cell=document.createElement('td');
+		cell.setAttribute("colspan", "6");
+		cell.appendChild(document.createTextNode("No Brews Created Yet..."));
+		row.appendChild(cell);
+		row.setAttribute("align","center");
 // 		cell=document.createElement('td');
 // 		cell.appendChild(document.createTextNode("No Brews Created Yet..."));
 // 		row.appendChild(cell);

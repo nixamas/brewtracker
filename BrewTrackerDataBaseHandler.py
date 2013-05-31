@@ -4,9 +4,10 @@
 
 """
 import sqlite3, json
+from datacapture import create_dummy_data_year
 
 class HomeBrewTrackerDataBase():
-    CONN = sqlite3.connect("brewtrackerdb.db")
+    DATABASE = "brewtrackerdb.db"
     def __init__(self):
         print("initializing the HomeBrewTrackerDataBase")
         
@@ -14,7 +15,7 @@ class HomeBrewTrackerDataBase():
         print("create_new_beer")
         print(str(name) + str(ingredients) + str(brew_date) + 
               str(second_stage_date) + str(bottle_date) + str(abv) + str(volume_brewed) + str(notes) )
-        conn = sqlite3.connect("brewtrackerdb.db")
+        conn = sqlite3.connect(self.DATABASE)
         cursor = conn.cursor()
         sql = "INSERT INTO mybeer (name, ingredients, brew_date, second_stage_date, bottle_date, abv, volume_brewed, notes) VALUES ('"
         sql = sql + str(name) + "', '" + str(ingredients) + "', '" + str(brew_date) + "', '" + str(second_stage_date) + "', '"
@@ -28,7 +29,7 @@ class HomeBrewTrackerDataBase():
         print("updating beer :: " + str(brew_id))
         print(str(name) + str(ingredients) + str(brew_date) + 
               str(second_stage_date) + str(bottle_date) + str(abv) + str(volume_brewed) + str(notes) )
-        conn = sqlite3.connect("brewtrackerdb.db")
+        conn = sqlite3.connect(self.DATABASE)
         cursor = conn.cursor()
         sql = "UPDATE mybeer SET name='" + str(name) + "', ingredients='" + str(ingredients) + "', brew_date='" + str(brew_date) + "', second_stage_date='" + str(second_stage_date) 
         sql = sql + "', bottle_date='" + str(bottle_date) + "', abv='" + str(abv) + "', volume_brewed='" + str(volume_brewed) + "', notes='" + str(notes) + "' "
@@ -38,7 +39,7 @@ class HomeBrewTrackerDataBase():
     
     def get_beer_by_id(self, id):
         print("getting beer by id :: " + str(id) )
-        conn = sqlite3.connect("brewtrackerdb.db")
+        conn = sqlite3.connect(self.DATABASE)
         cursor = conn.cursor()
         query_result = cursor.execute("SELECT * FROM mybeer WHERE id='" + str(id) + "'")
         my_beer = ""
@@ -50,7 +51,7 @@ class HomeBrewTrackerDataBase():
     
     def get_all_my_brews(self):
         print("getting all my beer")
-        conn = sqlite3.connect("brewtrackerdb.db")
+        conn = sqlite3.connect(self.DATABASE)
         cursor = conn.cursor()
         beers = []
         for beer in cursor.execute("SELECT * FROM mybeer ORDER BY id ASC"):
@@ -71,7 +72,7 @@ class HomeBrewTrackerDataBase():
     
     def parse_and_insert_gravity_readings(self, brew_id, gravity_reading_string):
         print("parse and insert gravity readings")
-        conn = sqlite3.connect("brewtrackerdb.db")
+        conn = sqlite3.connect(self.DATABASE)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM gravity_readings WHERE brew_id='" + str(brew_id) + "'")
         conn.commit()
@@ -86,7 +87,7 @@ class HomeBrewTrackerDataBase():
     def create_new_gravity_reading(self, brew_id, gr_id, gravity_reading_time, gravity_reading):
         print("create_new_gravity_reading")
         print(str(gravity_reading_time) + str(gravity_reading))
-        conn = sqlite3.connect("brewtrackerdb.db")
+        conn = sqlite3.connect(self.DATABASE)
         cursor = conn.cursor()
         sql = "INSERT INTO gravity_readings (brew_id, id, gravity_reading_time, gravity_reading) VALUES ('"
         sql = sql + str(brew_id) + "', '" + str(gr_id) + "', '" + str(gravity_reading_time) + "', '" + str(gravity_reading) + "')"
@@ -96,7 +97,7 @@ class HomeBrewTrackerDataBase():
         
     def get_gravity_readings_for_beer(self, beer_id):
         print("getting gravity readings")
-        conn = sqlite3.connect("brewtrackerdb.db")
+        conn = sqlite3.connect(self.DATABASE)
         cursor = conn.cursor()
         gravity_readings = []
         for reading in cursor.execute("SELECT * FROM gravity_readings WHERE brew_id='" + str(beer_id) + "'"):
@@ -109,19 +110,53 @@ class HomeBrewTrackerDataBase():
             
     def delete_brew(self, brew_id):
         print("deleting brew from database :: " + str(brew_id))
-        conn = sqlite3.connect("brewtrackerdb.db")
+        conn = sqlite3.connect(self.DATABASE)
         cursor = conn.cursor()
         sql = "DELETE FROM mybeer WHERE id='" + str(brew_id) + "'"
         cursor.execute(sql)
         conn.commit()
         
+    def is_readings_table_empty(self):
+        print("is_readings_table_empty")
+        conn = sqlite3.connect(self.DATABASE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM readings;")
+        print("sql ~~ SELECT COUNT(*) FROM readings;")
+        cnt = cursor.fetchone()[0]
+        print(str(cnt))
+        if cnt == 0:
+            print("true")
+            return True
+        else:
+            print("false")
+            return False
+        
+    def is_gravity_readings_table_empty(self):
+        print("is_gravity_readings_table_empty")
+        conn = sqlite3.connect(self.DATABASE)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM gravity_readings;")
+        print("sql ~~ SELECT COUNT(*) FROM gravity_readings;")
+        cnt = cursor.fetchone()[0]
+        print(str(cnt))
+        if cnt == 0:
+            print("true")
+            return True
+        else:
+            print("false")
+            return False
+        
 if __name__ == "__main__":
 
     handler = HomeBrewTrackerDataBase()
     
-    gr_str = "0;2013-05-27 22:18:17;1.0109#1;2013-05-28 22:18:17;1.0003#"
+#    gr_str = "0;2013-05-27 22:18:17;1.0109#1;2013-05-28 22:18:17;1.0003#"
     
-    handler.parse_and_insert_gravity_readings(1, gr_str)
+#    handler.parse_and_insert_gravity_readings(1, gr_str)
+    
+    handler.is_readings_table_empty()
+    
+    handler.is_gravity_readings_table_empty()
     
     #myid = handler.create_new_beer("name", "ingredients", "brew_date", "second_stage_date", "bottle_date", "abv", "volume", "notes")
     #print("my id :::::::::: " + str(myid))

@@ -1,4 +1,7 @@
-import sqlite3, random, datetime
+from datetime import datetime, timedelta
+import sqlite3
+import random
+import datetime
 
 def main():
     conn = sqlite3.connect("brewtrackerdb.db")
@@ -57,14 +60,39 @@ def insert_dummy_data(day):
         ambT = random.randrange(66, 80)
         
         #time = str(datetime.datetime.now()).split('.')[0]
-        time = str( datetime.datetime(2013,2,day) )
+        #time = str( datetime.datetime(2013,2,day) )
+        time = str( day )
         cursor.execute("INSERT INTO readings (reading_time, reading_brew_temp, reading_amb_temp) VALUES ('" + time + "', '" + str(brewT) + "', '" + str(ambT) + "')")
         print("sql ~~ INSERT INTO readings VALUES ('" + time + "', '" + str(brewT) + "', '" + str(ambT) + "')")
         conn.commit()
     except Exception:
         print("EXCEPTION ::::::: " + str(Exception))
 
+def create_dummy_data_year():
+    begin_year = datetime.datetime(2012, 1, 1,6,30,0)
+    end_year = datetime.datetime(2012, 12, 31,6,30,0)
+    one_day = datetime.timedelta(days=1)
+    
+    #print "These are all the dates of %d:" % year
+    next_day = begin_year
+    for day in range(0, 366):  # includes potential leap year
+        if next_day > end_year:
+            break
+        #print next_day
+        insert_dummy_data(next_day)
+        # increment date object by one day
+        next_day += one_day
+        
 if __name__ == "__main__":
     #main()
-    for x in range(1,25):
-        insert_dummy_data(x)
+    
+    #for x in range(1,25):
+    #    insert_dummy_data(x)
+    print("datacapture.py")
+
+
+
+
+
+
+

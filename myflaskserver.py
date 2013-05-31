@@ -4,14 +4,15 @@
 """
 from __future__ import with_statement
 from OpenBeerDataBaseAPI import Beer_Database_Api
-from datacapture import get_temperature
+from datacapture import get_temperature, create_dummy_data_year
 from flask import Flask, request, session, redirect, url_for, render_template, flash, _app_ctx_stack
 from jsonencoder import build_json
 from sqlite3 import dbapi2 as sqlite3
-from BrewTrackerDataBaseHandler import HomeBrewTrackerDataBase
+from BrewTrackerDataBaseHandler import HomeBrewTrackerDataBase as hbtdb
 from werkzeug.datastructures import ImmutableMultiDict
 import SystemSettings
 import json
+
 
 # configuration
 DATABASE = 'brewtrackerdb.db'
@@ -35,7 +36,7 @@ def init_db():
         with app.open_resource('schema.sql') as f:
             db.cursor().executescript(f.read())
         db.commit()
-
+        
 def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
@@ -84,14 +85,14 @@ def show_brewery(brewery_id):
 
 @app.route('/mybrews', methods=['GET'])
 def show_my_brews():
-    handler = HomeBrewTrackerDataBase()
+    handler = hbtdb()
     my_brews = handler.get_all_my_brews()
     
     return render_template( 'mybrews.html', my_brews=json.dumps(my_brews))
 
 @app.route('/mybrew/<my_brew_id>', methods=['GET', 'POST'])
 def show_my_brew(my_brew_id=None):
-    handler = HomeBrewTrackerDataBase()
+    handler = hbtdb()
     print("******************")
     print(str(request))
     print("******************")
@@ -119,7 +120,7 @@ def show_my_brew(my_brew_id=None):
 @app.route('/addgravityreading/<my_brew_id>', methods=['POST'])
 def add_gravity_reading(my_brew_id):
     print("adding gravity reading");
-    handler = HomeBrewTrackerDataBase()
+    handler = hbtdb()
     if request.method == 'POST':
         try:
             flash('Gravity Reading Saved');
@@ -136,7 +137,7 @@ def add_gravity_reading(my_brew_id):
 @app.route('/addbrew', methods=['GET','POST'])
 def add_brew():
     print("adding brew")
-    handler = HomeBrewTrackerDataBase()
+    handler = hbtdb()
     if request.method == 'POST':
         flash('New Brew was created')
         new_brew_id = handler.create_new_beer(request.form['name'], request.form['ingredients'], request.form['brew_date'], request.form['second_stage_date'], request.form['bottle_date'], request.form['abv'], request.form['volume_brewed'], request.form['notes'])
@@ -150,7 +151,7 @@ def add_brew():
 @app.route('/deletebrew/<my_brew_id>', methods=['GET'])
 def delete_brew(my_brew_id):
     print("deleting brew ::: " + str(my_brew_id))
-    handler = HomeBrewTrackerDataBase()
+    handler = hbtdb()
     handler.delete_brew(my_brew_id)
     return redirect(url_for('show_my_brews'))
 
@@ -203,8 +204,15 @@ def logout():
 
 if __name__ == '__main__':
     init_db()
-#    if BEER_DATABASE == {} :
-#        BEER_DATABASE = Beer_Database_Api()
+    
+    #inserts dummy data into readings table, may take ~15 seconds... sqlite3...
+    handler = hbtdb()
+    if handler.is_readings_table_empty():
+            print("inserting dummy analysis data...")
+            create_dummy_data_year()
+            
+    if BEER_DATABASE == {} :
+        BEER_DATABASE = Beer_Database_Api()
         
     app.run()
     
